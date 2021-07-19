@@ -1,0 +1,78 @@
+﻿@model  List<TracNghiemOnline.Modell.Kho_CauHoi>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH CÂU HỎI</h4>
+                <a href="/Admin/CauHoi/CreateCauHoi/@ViewBag.MaChuong"  class="btn btn-primary btn-round ml-auto" data-target="#addRowModal">
+                    <i class="fa fa-plus"></i>
+                    Thêm Câu Hỏi
+                </a>
+            </div>
+        </div>
+       
+        <div style="width:auto; height:3px; background-color:rgb(248,249,250);"></div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                    <div class="col-sm-12">
+                        <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+
+                            <thead>
+                                <tr>
+                                    <th width="100px">Mã Câu Hỏi  </th>
+                                    <th>Nôi Dung</th>
+                                    <th width="70px"> Mức Độ </th>
+                                    <th width="150px"></th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td> @item.Ma_CauHoi </td>
+
+                                        <td> @item.NoiDung</td>
+                                        <td>  @item.MucDo </td>
+                                        <td>
+                                            <a href="/Admin/CauHoi/DapAn/@item.Ma_CauHoi" class="btn btn-xs btn-primary">
+                                                <span><i class="far fa-eye"></i></span>
+                                            </a>&ensp;
+                                            <a href="#" class="btn btn-xs btn-success">
+                                                <span><i class="far fa-edit"></i></span>
+                                            </a>&ensp;
+                                            <a href="#" class="btn btn-xs btn-danger">
+                                                <span><i class="far fa-trash-alt"></i></span>
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                }
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+

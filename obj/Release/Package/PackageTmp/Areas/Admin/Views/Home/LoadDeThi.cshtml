@@ -1,0 +1,147 @@
+﻿@model TracNghiemOnline.Modell.Bo_De
+@{
+    ViewBag.Title = "LoadDeThi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    string mess = (string)ViewBag.Mess;
+}
+
+@section scripts{
+    <script>
+ 
+        function GuiDe(id) {
+            alert(id);
+                $.ajax({
+                    url: "/Admin/Home/GuiboMon/" + id,
+                    type: 'Get',
+                    success: function (res) {
+                        document.location ="/Admin/Home/BoMon"
+                    }
+                  
+
+                });
+        }
+    </script>
+}
+
+
+<div class="card">
+
+    <div class="card">
+
+        <div class="card mb-4">
+            @{
+                int i = 0;
+                foreach (var item in Model.CauHois)
+                {
+
+
+
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group">
+                                <h5 style="width:710px;"> Câu @(i=i+1) :  @item.Kho_CauHoi.NoiDung </h5>
+
+                                @{
+                                    try
+                                    {
+                                        if (item.Kho_CauHoi.HinhAnh.Length>0)
+                                        {
+                                            <div class="card-body ">
+                                                <img class="img-circle center-block" style="margin-left:140px" src="@item.Kho_CauHoi.HinhAnh"
+                                                     alt="anh viet nam anh 1 " width="400px" height="400px" />
+                                            </div>
+
+                                        }
+
+                                    }
+                                    catch { }
+
+                                }
+
+
+                            </div>
+                            @foreach (var item1 in item.Kho_CauHoi.Dap_AN)
+                            {
+                                <div class="form-group">
+                                    @{ try
+                                        {
+                                            if (item1.HinhAnh.Length>0)
+                                            {
+                                                <img class="img-circle center-block" style="margin-left:80px" src="@item1.HinhAnh"
+                                                     alt="anh viet nam anh 1 " width="150px" />
+
+                                            }
+                                        }
+                                        catch { }
+                                    }
+
+
+                                    <div class="custom-control custom-radio">
+
+                                        @if (item1.TrangThai == true)
+                                        {
+                                            <label class="custom-control-inline text-danger" style="width:700px;color:orangered " for="@item1.MA_DAN">
+                                                @item1.NoiDung
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <label class="custom-control-inline" style="width:700px" for="@item1.MA_DAN">
+                                                @item1.NoiDung
+                                            </label>
+                                        }
+
+
+
+                                    </div>
+                                </div>
+                            }
+
+                        </form>
+                    </div>
+
+
+                }
+                if (Model.CauHois.Count > 0)
+                {
+                    try
+                    {
+                        if (mess.Length == 0)
+                        {
+                            <div class="card-body">
+                                <a id="txtThem" class=" btn btn-danger" href="/Admin/Home/AddChapterStudy"> Tạo Đề </a>
+                            </div>
+
+                        }
+                        else
+                        {
+                            <div class="card-body">
+                                <a class=" btn btn-danger " href="/Admin/Home/DSDETHI"> Quay Lại </a>
+                                <button id="@mess" class=" btn btn-primary" onclick="GuiDe(id)"> Gửi Bộ Môn </button>
+                                <a class=" btn btn-success" href="@ViewBag.linkpdf" download=""> Xuất PDF </a>
+                            </div>
+
+                        }
+
+
+                    }
+                    catch
+                    {
+                        <div class="card-body">
+                            <a id="txtThem" class=" btn btn-danger" href="/Admin/Home/AddChapterStudy"> Tạo Đề </a>
+                        </div>
+
+                    }
+
+
+                }
+
+            }
+        </div>
+
+
+    </div>
+
+
+
+

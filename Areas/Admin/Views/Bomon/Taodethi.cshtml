@@ -1,0 +1,142 @@
+﻿@model TracNghiemOnline.Modell.Bo_De
+@{
+    ViewBag.Title = "TaoDeThi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    List<TracNghiemOnline.Modell.MonHoc> monHoc = (List<TracNghiemOnline.Modell.MonHoc>)ViewBag.MonHoc;
+    string thongbao = (string)ViewBag.A;
+    string thongbao1 = (string)ViewBag.B;
+    string thongbao2 = (string)ViewBag.C;
+
+}
+@section Jsfooter{
+    <script>
+        function Show() {
+            var cmb = document.getElementById("TxtMonHoc");
+            var id = cmb.value;
+
+            $.ajax({
+                type: "POST",
+                url: "ChonMon",
+                data: { id },
+                success: function () {
+
+                }
+            });
+        };
+
+        function SHOWTG() {
+            var cmd = document.getElementById("txtTG");
+            var tg = cmd.value;
+
+            $.ajax({
+                type: "POST",
+                url: "ChonTG",
+                data: { tg },
+                success: function () {}
+            });
+        };
+        function showoption() {
+            var cmd = document.getElementById("txtchon");
+            var id = cmd.value;
+
+            $.ajax({
+                type: "POST",
+                url: "ChonDe",
+                data: { id },
+                success: function () { }
+            });
+        };
+    </script>
+}
+
+<div class="container-fluid">
+    <div class="card mb-4 ">
+        <div class="card-body card-header ">
+            <div class="mt-lg-2">
+                THÔNG TIN ĐỀ THI
+            </div>
+        </div>
+        <div class="card-body ">
+            @using (Html.BeginForm("Monhoc", "Bomon", new AjaxOptions { InsertionMode = InsertionMode.Replace, UpdateTargetId = "ThongBao" }))
+            {
+                <h1 id="ThongBao" style="color:azure"></h1>
+                <div class="form-group">
+                    <label>Môn Học:</label>
+                    <select class=" form-control col-12" id="TxtMonHoc" onchange="Show()">
+                        <option value=" ">--Chọn môn học--</option>
+                        @foreach (var item in monHoc)
+                        {
+
+                            <option value="@item.Ma_Mon"> @item.TenMon </option>
+
+                        }
+
+                    </select>
+                    @if (thongbao1.Length > 0)
+                    {
+
+                        <p class="text-danger">@thongbao1</p>
+
+
+                    }
+                </div>
+                <div class="form-group">
+                    <label>Nội dung</label>
+
+                    @Html.EditorFor(model => model.NoiDung, new { htmlAttributes = new { @class = "form-control col-12" } })
+                    @Html.ValidationMessageFor(model => model.NoiDung, "", new { @class = "text-danger" })
+
+                </div>
+
+
+                <div class="form-group">
+                    <label>Thời gian làm bài</label>
+
+                    <select class=" form-control col-12" id="txtTG" onchange="SHOWTG()">
+                        <option value="">--Chọn thời gian--</option>
+                        @for (int i = 10; i <= 180; i += 10)
+                        {
+                            <option value="@i"> @i Phút </option>
+
+                        }
+                    </select>
+                    @if (thongbao.Length > 0)
+                    {
+
+                        <p class="text-danger">@thongbao</p>
+
+                    }
+
+                </div>
+                <div class="form-group">
+                    <label>Cách chọn câu hỏi:</label>
+                    <select class=" form-control col-12" id="txtchon" onchange="showoption()">
+                        <option value="">--Cách Thức Tạo Đề--</option>
+                        <option value="Ngẫu Nhiên">Ngẫu Nhiên </option>
+                        <option value="Tự Chọn">Tự Chọn</option>
+                    </select>
+                    @if (thongbao2.Length > 0)
+                    {
+
+                        <p class="text-danger">@thongbao2</p>
+
+
+                    }
+                </div>
+
+                <div class="row">
+                    <div class="mt-lg-2" style="margin-left:450px;">
+                        <button class=" btn  btn-round btn-success"> Hoàn Thành </button>
+                    </div>&ensp;
+                    <div class="mt-lg-2">
+                        <a class=" btn btn-round btn-primary" href="/Admin/BoMon/DSDethi"> Quay Lai </a>
+                    </div>
+                </div>
+
+            }
+
+        </div>
+    </div>
+
+
+</div>

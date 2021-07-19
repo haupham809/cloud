@@ -1,0 +1,124 @@
+﻿
+@{
+    ViewBag.Title = "DSDeThi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+@model List<TracNghiemOnline.Modell.Bo_De>
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $(document).on('click', 'button[name=Delete]', function () {
+                Bode = $(this).closest('tr');
+                let ma = $(this).closest('tr').find("td:eq(0)").text().trim();
+                $('#ma').val(ma.trim());
+
+                $('#modalConfirm').modal();
+
+            });
+            $('#btnYes').click(function () {
+
+                let made = $('#ma').val().trim();;
+
+
+                $('#modalSinhVien').modal('hide');
+                $.ajax({
+                    url: '/Admin/Home/Update', type: 'post',
+                    data: {
+                        made: made,
+                        trangthai: true,
+                    },
+                    success: function (data) {
+                        // Loaddata(data);
+                        window.location = "/Admin/Admin/DSDETHI";
+                    }
+                });
+
+            });
+
+       
+        })
+
+
+    </script>
+}
+
+<div class="modal" tabindex="-1" role="dialog" id="modalConfirm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-dark">
+                <h5 class="modal-title">CẢNH BÁO</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="ma" value="" />
+                Bạn có chắc chắn muốn xóa?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnYes">Xác nhận</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row" style="height:20px;">
+
+</div>
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH ĐỀ THI</h4>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                
+                        <div class="col-sm-12">
+                            <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                                <thead>
+                                    <tr role="row">
+                                        <th class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" >Mã đề</th>
+                                        <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" >Nội dung</th>
+                                        <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" >Tên môn học</th>
+                                        <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" >Số câu</th>
+                                        <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" >Thời gian thi</th>
+                                        <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" >Người tạo</th>
+                                        <th style="width:15%;" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending"></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="bodeid">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td> @item.Ma_BoDe </td>
+                                            <td>  @item.NoiDung </td>
+                                            <td> @item.MonHoc.TenMon</td>
+                                            <td> @item.SoCau</td>
+                                            <td id="sad"> @item.ThoiGianThi</td>
+                                            <td>  @item.GiaoVien.TenGV </td>
+                                            <td>
+                                                <a href="/Admin/Bomon/xemde/@item.Ma_BoDe?tenmon=@item.MonHoc.TenMon" class="btn btn-xs btn-primary">
+                                                    <span><i class="far fa-eye"></i></span>
+                                                </a>
+                                                <button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true"></i></button>
+                                            </td>
+
+                                        </tr>
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

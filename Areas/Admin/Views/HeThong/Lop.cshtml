@@ -1,0 +1,259 @@
+﻿@model TracNghiemOnline.Modell.Nganh
+@using TracNghiemOnline.Modell
+@{
+    ViewBag.Title = "Lop";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+<div class="row" style="height:20px;">
+
+</div>
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH LỚP</h4>
+                <button class="btn btn-primary btn-round ml-auto" data-toggle="modal" id="btnAdd" data-target="#addRowModal">
+                    <i class="fa fa-plus"></i>
+                    Thêm lớp
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+
+                    <div class="col-sm-12">
+                        <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                            <thead>
+                                <tr role="row">
+                                    <th class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Mã lớp</th>
+                                    <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Tên lớp</th>
+                                    @*<th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Ngành</th>*@
+                                    <th style="width: 15%;" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending"></th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tblLop">
+                                @foreach (var item in new TracNghiemOnlineDB().Lops.Where(x => x.DaXoa == null || x.DaXoa==0).ToList())
+                                {
+                                    <tr id="@item.Ma_Lop">
+
+                                        <td>@item.Ma_Lop</td>
+
+                                        <td>@item.TenLop</td>
+
+                                        @*<td>@item.Nganh.TenNganh</td>*@
+
+                                        <td>
+
+                                            <button name="Update" class="btn btn-xs btn-primary"><i class="far fa-edit" aria-hidden="true"></i></button>&ensp;
+                                            <button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true" style="color:white"></i></button>
+
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal thêm sửa*@
+<div class="modal" tabindex="-1" role="dialog" id="modalLop">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">THÔNG TIN LỚP</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="idLop" value="" />
+                <p>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Mã lớp</label>
+                        <input type="text" class="form-control" id="maLop" placeholder="Mã lớp">
+                        <label for="exampleFormControlInput1">Tên lớp</label>
+                        <input type="text" class="form-control" id="tenLop" placeholder="Tên lớp">
+
+                        @*<label>Chọn ngành</label>
+                        <div class="form-group">
+                            @if (ViewBag.lstNganh != null)
+                            {
+                                @Html.DropDownListFor(model => model.Ma_Nganh, ViewBag.lstNganh as SelectList, "--Chọn ngành--", new { @class = "form-control" })
+                            }
+                        </div>*@
+
+                    </div>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal Xóa*@
+<div class="modal" tabindex="-1" role="dialog" id="modalConfirm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">CẢNH BÁO</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="ma" value="" />
+                Bạn có chắc chắn muốn xóa?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnYes">Xác nhận</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+
+        $(document).ready(function () {
+            loaddsGV();
+
+        });
+        //load du lieu
+        function loaddsGV() {
+            $('#modalLop').hide();
+      
+            $.ajax({
+                url: '/Admin/HeThong/dsLop', type: 'get',
+
+                success: function (data) {
+                    if (data.code == 200) {
+                        $('#tblLop').empty();
+                        $.each(data.dsLop, function (k, v) {
+                            let tr = '<tr id = "' + v.MaLop + '">';
+                            tr += '<td>' + v.MaLop + '</td>';
+                            tr += '<td>' + v.TenLop + '</td>';
+                            @*tr += '<td id = "' + v.MaNganh + '">' + v.TenNganh + '</td>';*@
+                            tr += '<td>';
+                            tr += '<button name="Update" class="btn btn-xs btn-primary"><i class="far fa-edit" aria-hidden="true"></i></button>&ensp;';
+                            tr += '<button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true" style="color:white"></i></button>';
+                            tr += '</td > ';
+                            tr += '</tr > ';
+                            $('#tblLop').append(tr);
+
+                        });
+
+                    }
+                }
+            });
+
+        };
+
+
+        //show form
+        $('#btnAdd').click(function () {
+            $('#modalLop').modal();
+
+            $('#idLop').val('');
+        })
+        //Add or Updtae
+        $('#btnSubmit').click(function () {
+            let maLop = $('#maLop').val().trim();
+            let tenLop = $('#tenLop').val().trim();
+          //  let maNganh = $('#Ma_Nganh').val();
+
+            if (maLop.length == 0 || tenLop.length == 0) {
+                alert("Vui lòng nhập đầy đủ thông tin");
+                return;
+            }
+            let idLop = $('#idLop').val().trim();
+            if (idLop.length == 0) {
+                //Add
+                $.ajax({
+                    url: '/Admin/HeThong/AddLop', type: 'post',
+                    data: {
+                        maLop: maLop,
+                        tenLop: tenLop,
+                      //  maNganh: maNganh
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            alert(data.msg);
+                            window.location = "/Admin/HeThong/Lop";
+                           // loaddsGV();
+                        } else {
+                            alert.data(msg);
+                        }
+                    }
+                });
+            } else {
+                //Update
+                $.ajax({
+                    url: '/Admin/HeThong/UpdateLop', type: 'post',
+                    data: {
+                        maLop: maLop,
+                        tenLop: tenLop,
+                      //  maNganh: maNganh
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            alert(data.msg);
+                            window.location = "/Admin/HeThong/Lop";
+                         //   loaddsGV();
+
+                        } else {
+                            alert.data(msg);
+                        }
+                    }
+                });
+            }
+
+
+        });
+        //click button Sua
+        $(document).on('click', "button[name = 'Update']", function () {
+            let ma = $(this).closest('tr').attr('id');
+            let ten = $(this).closest('tr').find("td:eq(1)").text();
+          //  let manganh = $(this).closest('tr').find("td:eq(2)").attr('id');
+            $('#idLop').val(ma);
+            $('#maLop').val(ma);
+            $('#tenLop').val(ten);
+           // $('#Ma_Nganh').val(manganh);
+            $('#modalLop').modal();
+        });
+        //Xóa
+        $(document).on('click', "button[name = 'Delete']", function () {
+            let ma = $(this).closest('tr').attr('id');
+            $('#ma').val(ma);
+            $('#modalConfirm').modal();
+
+        });
+
+        $('#btnYes').click(function () {
+            let maGV = $('#ma').val().trim();
+            $.ajax({
+                url: '/Admin/HeThong/DeleteLop', type: 'post',
+                data: {
+                    maLop: maGV,
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        alert(data.msg);
+                        window.location = "/Admin/HeThong/Lop";
+                       // loaddsGV();
+                        $('#modalConfirm').modal('hide');
+                    } else {
+                        alert.data(msg);
+                    }
+                }
+            });
+
+        });
+
+    </script>
+
+}

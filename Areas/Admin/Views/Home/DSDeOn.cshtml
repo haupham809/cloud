@@ -1,0 +1,363 @@
+﻿@model List<TracNghiemOnline.Modell.BoDeOnTap>
+@{
+    ViewBag.Title = "DSDeOn";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    List<TracNghiemOnline.Modell.Kho_CauHoi> cauHois = (List<TracNghiemOnline.Modell.Kho_CauHoi>)ViewBag.DeOn;
+}
+@section Jsfooter{
+    <script>
+        var check = false;
+        $(document).ready(function(){
+            var cout = $('#txtSoCau').val();
+            if (cout > 0) {
+                $('#ChonDe').show();
+                $('#DSSV').hide();
+                check == true;
+            }
+
+        });
+        function TaoNut() {
+            if (check == true) {
+                $('#Them').show();
+            }
+            else {
+                $('#Them').hide();
+            }
+        }
+
+        $('#ChonDe').hide();
+        function TaoDeOn(id) {
+            $('#ChonDe').show();
+            $('#DSSV').hide();
+            check = false;
+            TaoNut();          
+        }
+        $('#btnNhan').click(function () {
+            if ($('#txtFile').val().length > 0) {
+                if (window.FormData !== undefined) {
+                    var fileupload = $('#txtFile').get(0);
+                    var file = fileupload.files;
+                    var formdata = new FormData();
+                    formdata.append('file', file[0]);
+                    var machuong = this.title;  
+                     $.ajax({
+                        type: 'POST',
+                        url: '/CauHoi/XuLyFile',
+                        contentType: false, //Khong co hear
+                        processData: false,//Khong Xu Ly Du Lieu
+                        data: formdata,
+                        success: function (urlImage) {
+
+                            if (urlImage.status == true) {
+
+                                window.location = "/Admin/Home/DSDeOn/" + machuong;
+                            }
+                            else {
+                                alert("Sai Định Dạng Vui Lòng Kiểm Trả Lại");
+                            }
+
+                        }
+                    });
+                }
+            } else {
+                alert("Vui lòng chọn file");
+            }
+            
+
+        });
+        $('#btnDong').click(function () {
+
+            $('#ChonDe').hide();
+
+            $('#DSSV').slideDown();
+            check = false;
+            TaoNut();
+            $('#de').empty();
+
+        });
+        $('#Them').click(function () {
+            var date = new Date($('#TGBD').val());
+            var ten = $('#txtnd').val();
+            var tg = $('#txtTG').val();
+            var date2 = new Date($('#TGKT').val());
+            if (ten.length == 0 || tg.length==0) {
+                alert("Vui lòng nhập đầy đủ nội dung");
+            }
+          else if (($('#TGBD').val().length == 0 && $('#TGKT').val().length == 0) || ($('#TGKT').val().length > 0 && $('#TGBD').val().length == 0)) {
+                if ($('#TGKT').val().length > 0) {
+                    $.ajax({
+                        type: 'get',
+                        data: { nd: ten, tg: tg, malop: $('#txtMaphong').val(), bd: $('#TGKT').val() },
+                        url: '/Admin/Home/ThemDeOn1',
+                        success: function (res) {
+                            window.location = '/Admin/Home/DSDeOn/' + $('#txtMaphong').val();
+                        }
+                    });
+
+                }
+                else {
+                    $.ajax({
+                        type: 'get',
+                        data: { nd: ten, tg: tg, malop: $('#txtMaphong').val() },
+                        url: '/Admin/Home/ThemDeOn',
+                        success: function (res) {
+                            window.location = '/Admin/Home/DSDeOn/' + $('#txtMaphong').val();
+                        }
+                    });
+
+                }
+            }
+            
+
+            else {
+                if (date < date2) {
+                    
+
+                    $.ajax({
+                        type: 'get',
+                        data: { nd: ten, tg: tg, malop: $('#txtMaphong').val(), TGBD: $('#TGBD').val(), TGKT: $('#TGKT').val() },
+                        url: '/Admin/Home/TaoDeOn',
+                        success: function (res) {
+                            window.location = '/Admin/Home/DSDeOn/' + $('#txtMaphong').val();
+                        }
+
+                    });
+                }
+                else if (date >= date2) {
+                    
+                    alert("Thời Gian Bắt Đầu Phải Bé Hơn Thời Gian Kết Thúc");
+                }
+                else {
+
+                    alert("Vui Lòng Nhập Đầy Đủ Thời Gian");
+
+                }
+            }
+
+        });
+
+    </script>
+        
+        }
+<input  id="txtSoCau" hidden="hidden" value="@cauHois.Count"/>
+<div class="container card" id="ChonDe">
+    <div class="card-body">
+        <div class="row" id="DsThethi">
+            <input id="txtFile" class="form-control col-7" type="file"  accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.doc,.docx" />
+            <div class="col-4">
+                <button id="btnNhan" class="btn btn-primary" title="@ViewBag.Malop"> Tải Lên</button>
+                <button id="btnDong" class="btn badge-danger">Quay Lai</button>
+                @if (cauHois.Count > 0)
+                {
+                    <button id="Them"  class="btn btn-success">Đăng </button>
+                }
+                
+            </div>
+        </div>
+        <div id="de">
+            @if (cauHois.Count > 0)
+            {
+                <div class="container-fluid">
+                    <div class="card-body">
+                        <div class="form-group "> Tên Đề : <input id="txtnd" class="form-control col-12"/>  </div>
+                        <div class="form-group">
+                            <label>Thời gian làm bài</label>
+
+                            <select class=" form-control col-12" id="txtTG">
+                                <option value="">--Chọn thời gian--</option>
+                                @for (int i = 10; i <= 180; i += 10)
+                                {
+                                    <option value="@i"> @i Phút </option>
+
+                                }
+                            </select> 
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Thời Gian Bắt Đầu </label>
+                                    <input class="form-control" type="datetime-local" id="TGBD" name="DateOfBirth" data-date-format />
+                                </div>
+                                <div class="col-5">
+                                    <label>Thời Gian Kết Thúc </label>
+                                    <input class="form-control" type="datetime-local" id="TGKT" name="DateOfBirth" data-date-format />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div>
+                @{try
+                    {
+                        int i = 0;
+                        foreach (var item in cauHois)
+                        {
+
+
+
+                            <div class="card-body">
+                                <form>
+                                    <div class="form-group">
+                                        <h5 style="width:710px;"> Câu @(i=i+1) :  @item.NoiDung </h5>
+
+                                        @if (item.HinhAnh.Length > 0)
+                                        {
+                                            <div class="card-body ">
+                                                <img class="img-circle center-block" style="margin-left:140px" src="@item.HinhAnh.Trim()"
+                                                     alt="anh viet nam anh 1 " width="400px" height="400px" />
+                                            </div>
+
+                                        }
+
+                                    </div>
+                                    @foreach (var item1 in item.Dap_AN)
+                                    {
+                                        <div class="form-group">
+                                            @{ try
+                                                {
+                                                    if (item1.HinhAnh.Length > 0)
+                                                    {
+                                                        <img class="img-circle center-block" style="margin-left:80px" src="@item1.HinhAnh"
+                                                             alt="anh viet nam anh 1 " width="150px" />
+
+                                                    }
+                                                }
+                                                catch { }
+                                            }
+
+
+                                            <div class="custom-control custom-radio">
+
+                                                @if (item1.TrangThai == true)
+                                                {
+                                                    <label class="custom-control-inline text-danger" style="width:700px;color:orangered " for="@item1.MA_DAN">
+                                                        @item1.NoiDung
+                                                    </label>
+                                                }
+                                                else
+                                                {
+                                                    <label class="custom-control-inline" style="width:700px" for="@item1.MA_DAN">
+                                                        @item1.NoiDung
+                                                    </label>
+                                                }
+
+
+
+                                            </div>
+                                        </div>
+                                    }
+                                    
+                                </form>
+                            </div>
+
+
+                        }
+                        if (Model.Count > 0)
+                        {
+                            @*<div class="row">
+                            <div class="col-10" style="text-align:center">
+                                <select id="txtMucDo" class="form-control col-12">
+                                    <option value="">Mức Độ Câu Hỏi</option>
+                                    <option value="Nhận Biết">Nhận Biết</option>
+                                    <option value="Thông Hiểu">Thông Hiểu</option>
+                                    <option value="Vận Dụng">Vận Dụng</option>
+                                    <option value="Vận Dụng Cao">Vận Dụng Cao</option>
+
+                                </select>
+                            </div>
+                        </div>*@
+
+
+                            @*<input type="button" id="@machuong" onclick="XuKien(this.id)" class="btn-danger col-3" value="Thêm" href="" />*@
+                        }
+
+                    }
+                    catch { }
+
+                }
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+</div>
+
+
+    @{
+        <div class="col-md-12"  id="DSSV">
+            <input hidden="hidden" id="txtmon" value="@ViewBag.id" />
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title">DANH SÁCH MÔN HỌC</h4>
+                        <input id="txtMaphong" value="@ViewBag.Malop" hidden="hidden" />
+                        <button id="@ViewBag.Malop" onclick="TaoDeOn(id)" class="btn btn-primary btn-round ml-auto" style="float:right">
+                            <i class="fa fa-plus"></i>
+                            <span>Thêm đề thi</span>
+                        </button>
+
+                      
+                    </div>
+                </div>
+                <div style="width:auto; height:3px; background-color:rgb(248,249,250);"></div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                            <div class="col-sm-12">
+                                <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã Bộ Đề  </th>
+                                            <th>Tên Bộ Đề </th>
+                                            <th> Môn Học </th>
+                                            <th> Thời Gian Thi</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Mã Bộ Đề  </th>
+                                            <th>Tên Bộ Đề </th>
+                                            <th> Môn Học </th>
+                                            <th> Thời Gian Thi</th>
+
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody id="lophoc">
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td> @item.Bo_De.Ma_BoDe </td>
+                                                <td>  @item.Bo_De.NoiDung </td>
+                                                <td>  @item.Bo_De.MonHoc.TenMon </td>
+                                                <td> @item.Bo_De.ThoiGianThi Phút</td>
+                                                <td>   <button name="Update" class="btn btn-xs btn-warning"><i class="fa fa-edit" aria-hidden="true" style="color:white"></i></button> </td>
+                                            </tr>
+
+                                        }
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+
+
+
+
+                        </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+                        }
+                   

@@ -1,0 +1,277 @@
+﻿@model List<TracNghiemOnline.Modell.Phong_Thi>
+
+@{
+    ViewBag.Title = "PhongThi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+
+@section  Jsfooter{
+    <script>
+
+        $(document).ready(function () {
+            $('#ChonDe').hide();
+            var MaPhong
+            $('#btnDong').click(function () {
+
+                $('#ChonDe').hide();
+
+                $('#DsPhong').slideDown();
+
+            });
+            $('#btnSubmit').click(function () {
+                var text = $('#lop').val();
+                var Ten = $('#tenPhong').val();
+
+                if (Ten.length == 0) {
+                    alert("Bạn Vui Nhập Tên Phòng Thi");
+
+                }
+                else if (text.length == 0) {
+                    alert("Bạn Vui Lòng Chọn Lớp Học Phần");
+                }
+
+                if (text.length > 0) {
+                    var arr = [];
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Admin/QuanLyThi/CreatePhongThi/',
+                        data: { MALop: text, DS: JSON.stringify(arr), MaSV: "", nd: Ten },
+                        success: function (res) {
+                            $('Lop').modal('hide');
+                            document.location = "/Admin/QuanLyThi/PhongThi";
+                        }
+                    });
+
+
+
+                }
+
+            });
+            $(document).on('click', 'button[name=btnVaoThi]', function () {
+                LoadDe($(this));
+            });
+
+            $('#btnThem').click(function () {
+                $.ajax({
+                    type: 'post',
+                    url: '/Admin/QuanLyThi/ListALLClassRoom',
+                    success: function (data) {
+                        if (data.code == 200) {
+                            var Let = '<option value="">DS Lớp Học Phần</option>';
+                            $('#lop').empty();
+                            $('#lop').append(Let);
+                            $.each(data.lop, function (k, v) {
+
+                                Let = '<option value="' + v.id + '">' + v.Ten + '</option>';
+                                $('#lop').append(Let);
+                            });
+
+                           
+
+                            $('#modalLopHP').modal();
+                        }
+                        else {
+                            alert("Bạn Không Có Lóp Học Phần");
+                        }
+
+                    }
+
+
+                });
+
+
+
+            });
+
+            $(document).on('click', 'button[name=btnHuyPhong]', function () {
+                MaPhong = $(this).closest('tr');
+                var TrangThai = $(this).closest('tr').find("td:eq(4)").text().trim();
+                if (TrangThai == 'Đang Thi') {
+                    alert("Phòng này đang thi bạn không thể xóa");
+                }
+                else {
+                    let ma = $(MaPhong).attr('id');
+                    $('#ma').val(ma);
+                    $('#modalConfirm').modal();
+                    //
+                }
+
+                $('#btnYes').click(function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: "/Admin/QuanLyThi/UpdateExamRoom/" + MaPhong.attr('id'),
+                        success: function (res) {
+                            $('#modalConfirm').modal('hide');
+                            MaPhong.remove();
+                        }
+                    });
+
+
+                });
+
+
+
+            });
+            function LoadDe(E) {
+                var mabode = $(E).closest('tr').find("td:eq(5)").attr('id');
+                var maPhong = $(E).closest('tr').attr('id');
+                if (mabode == null) {
+
+                    $.ajax({
+                        type: 'Get',
+                        url: '/Admin/QuanLyThi/VaoThi/' + maPhong,
+                        success: function (data) {
+                            $('#DsThethi').empty();
+                            $.each(data.Bode, function (K, V) {
+
+
+                                let de = '<div class="col-md-3">'
+                                de += '<div class="card   mb-4">'
+                                de += '<div class="card-footer bg-primary d-flex align-items-center justify-content-between">'
+                                de += ' <h3 class="small text-white">' + V.Ten + '</h3 >'
+                                de += '</div> '
+                                de += '   <div class="card-body" > Thời Gian:' + V.ThoiGian + 'Phút </div >'
+                                de += '    <div class="card-body" > Số Câu:' + V.SoCau + 'Câu </div >'
+                                de += ' <a class="btn  bg-danger "href = "/Admin/QuanLyThi/ChonDe/' + V.MaDe + '" > Bat Dau </a >'
+                                de += '  </div >'
+                                de += '   </div >'
+                                $('#DsThethi').append(de);
+
+                            });
+
+                            $('#ChonDe').show();
+
+                            $('#DsPhong').hide();
+                        }
+
+                    });
+                } else {
+
+                    window.location = '/Admin/QuanLyThi/ToChucThi/' + maPhong;
+
+                }
+
+
+            }
+        });
+    </script>
+
+}
+
+<div class="col-md-12" id="DsPhong">
+    <div class="card">
+    <div class="card-header">
+        <div class="d-flex align-items-center">
+            <h4 class="card-title">DANH SÁCH PHÒNG THI</h4>
+            <button class="btn btn-primary btn-round ml-auto" id="btnThem" style="text-align:center"><i class="fa fa-plus"></i>TẠO PHÒNG</button>
+        </div>
+    </div>
+    <div class="card-body">
+
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                    <div class="col-sm-12">
+                        <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                            <thead>
+                                <tr>
+                                    <th>Mã Phòng </th>
+                                    <th> Tên Phòng </th>
+                                    <th>Lớp Học Phần </th>
+                                    <th>Sĩ Số  </th>
+                                    <th> Trạng Thái </th>
+
+                                    <th></th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr id="@item.MaPhong">
+                                        <td> @item.MaPhong </td>
+                                        <td> @item.TenPhong </td>
+                                        <td> @item.LopHocPhan.TenLop </td>
+                                        <td> @item.DS_SVThi.Count </td>
+                                        <td>  @item.TrangThai </td>
+                                        <td id="@item.MaBoDe">
+
+                                            <a class="btn btn-sm badge-primary" href="/Admin/Home/DSSVThi/@item.MaPhong"> Xem Danh Sách  </a>
+                                            <button class="btn btn-sm badge-warning " name="btnVaoThi" href="/Admin/QuanLyThi/VaoThi/@item.MaPhong"> Vào </button>
+
+                                            <button class="btn  btn-sm badge-danger " name="btnHuyPhong" href="/Admin/QuanLyThi/VaoThi/@item.MaPhong"> Hủy Phòng </button>
+
+
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                        </div>
+                    </div>
+                </div>
+                    </div>
+                </div>
+            </div>
+     
+        <div class="card-body">
+            <div class="container-fluid" id="ChonDe">
+                <div class="row ">
+                    <h1 class=" col-10 mt-4">Đề Thi </h1>
+                    <div class="col-2 mt-4" style="float:right"><button id="btnDong" class="btn badge-danger">Quay Lai</button></div>
+                </div>
+
+                <div class="row" id="DsThethi">
+
+                </div>
+            </div>
+        </div>
+        <div class="modal" tabindex="-1" role="dialog" id="modalConfirm">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary">
+                        <h5 class="modal-title">CẢNH BÁO</h5>
+
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" hidden id="ma" value="" />
+                        Bạn có chắc chắn muốn xóa?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" id="btnYes">Xác nhận</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnDong">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*  Them Phong *@
+
+        <div class="modal" tabindex="-1" role="dialog" id="modalLopHP">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary">
+                        Bạn vui lòng chọn lớp học phần
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            <label>Tên Phòng</label>
+                            <input type="text" class="form-control" id="tenPhong" placeholder="Nhập Tên Phòng">
+                            <div class="form-group">
+                                <div class="form-group" id="LopHP">
+                                    <select id="lop" class="form-control">
+                                    </select>
+
+
+                                </div>
+                            </div>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" id="btnSubmit">Xác nhận</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnDong">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>

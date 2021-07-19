@@ -1,0 +1,196 @@
+﻿@model List<TracNghiemOnline.Model.DanhGia>
+@{
+    ViewBag.Title = "KetQuaphongthi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    var danhgia = (List<TracNghiemOnline.Modell.Danh_Gia>)ViewBag.DanhGia;
+}
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+                var ctx = document.getElementById('myChart').getContext('2d');
+            var c = [];
+            var ten = [];
+            $('#frmdiem').slideDown();
+            $('#frmbieudo').hide();
+            var maphong = $('#txtmaphong').val();
+                $.ajax({
+                    type: 'Post',
+                    url: "/Admin/Home/DanhGia/"+maphong,
+                    dataType: 'json',
+                    success: function (res) {
+
+                        $.each(res.mang, function (k, v) {
+
+                            c.push(v.gt)
+                            ten.push(v.ten);
+
+                        })
+
+                        var chart = new Chart(ctx, {
+                            // The type of chart we want to create
+                            type: 'bar',
+
+                            // The data for our dataset
+                            data: {
+                                labels: ten,
+                                datasets: [{
+                                    label: 'Biểu Đồ Thống Kê',
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                        'rgba(255, 159, 64, 0.2)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 99, 132, 1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)'
+                                    ],
+                                 //   borderWidth: 1,
+                                    data: c
+                                }]
+                            },
+
+                            // Configuration options go here
+                            options: {}
+                        });
+                    }
+
+
+
+                });
+
+            $('#example').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            });
+            $('#bntnhanxet').click(function () {
+
+                $('#frmdiem').slideDown();
+                $('#frmbieudo').hide();
+
+            });
+            $('#bntthongke').click(function () {
+
+                $('#frmbieudo').slideDown();
+                $('#frmdiem').hide();
+
+            });
+        });
+
+    </script>
+
+}
+
+
+
+<div class="col-md-12">
+    <input hidden="hidden" id="txtmon" value="@ViewBag.id" />
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">KẾT QUẢ PHÒNG THI</h4>
+                <div class="ml-auto ">
+                    <button id="bntnhanxet" class="btn btn-primary btn-round" style="float:right">
+                        <i class="fa fa-plus"></i>
+                        <span>Xem kết quả </span>
+                    </button>
+                    <button id="bntthongke" class="btn btn-primary btn-round ml-auto " style="float:right">
+                        <i class="fa fa-plus"></i>
+                        <span>Xem thống kê </span>
+                    </button>
+
+</div>
+                    <input id="txtmaphong" value="@ViewBag.Maphong" hidden />
+                </div>
+            
+        </div>
+        <div class="card-body " >
+            <div class="container-fluid"  id="frmdiem">
+                <div class="card-body">
+                    <div class="navbar-collapse" id="XemDanhgia">
+                        <div class="table-responsive">
+                            <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                                <div class="col-sm-12">
+                                    <table id="example" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                                        <thead>
+                                            <tr>
+                                                <th>Mã Đề</th>
+                                                <th>Mã SV  </th>
+                                                <th> Họ Tên </th>
+                                                <th> Số Câu Sai  </th>
+                                                <th> Số Câu đúng  </th>
+                                                <th> Điểm </th>
+                                                <th>  </th>
+
+                                            </tr>
+                                        </thead>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Mã Đề</th>
+                                                <th>Mã SV  </th>
+                                                <th> Họ Tên </th>
+                                                <th> Số Câu sai  </th>
+                                                <th> Số Câu đúng  </th>
+                                                <th>  </th>
+                                            </tr>
+                                        </tfoot>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td> @item.ketQuaThi.Ma_DeThi </td>
+                                                    <td> @item.ketQuaThi.De_Thi.SinhVien.MaSV </td>
+                                                    <td>  @item.ketQuaThi.De_Thi.SinhVien.Ten  </td>
+                                                    <td> @item.ketQuaThi.SoCauSai </td>
+                                                    <td>  @item.ketQuaThi.SoCauDung </td>
+                                                    <td>  @item.ketQuaThi.DiemSo </td>
+                                                    <td>
+                                                        <a href="/Admin/QuanLyThi/DiemSo/@item.ketQuaThi.Ma_DeThi" class="btn btn-sm btn-success"><span>Xem kết quả</span></a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+
+                                    </table>
+                                    </ul>
+                                </div>
+
+
+
+                                </ul>
+                            </div>
+                        </div>
+
+
+
+
+
+                    </div>
+            </div>
+
+
+
+        </div>
+
+        <div class="container-fluid" id="frmbieudo">
+            <div class="card mb-4">
+                <canvas id="myChart" width="100" height="50">
+                </canvas>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+</div>

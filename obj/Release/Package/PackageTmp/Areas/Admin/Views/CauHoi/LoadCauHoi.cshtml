@@ -1,0 +1,87 @@
+﻿
+@{
+    ViewBag.Title = "LoadCauHoi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    List<TracNghiemOnline.Modell.Kho_CauHoi> cauHois = (List<TracNghiemOnline.Modell.Kho_CauHoi>)ViewBag.cauhoi;
+}
+
+<div class="container card" id="ChonDe">
+    <div class="card-body">
+        <div id="de">
+            <div>
+                @{try
+                    {
+                        int i = 0;
+                        foreach (var item in cauHois)
+                        {
+
+
+
+                            <div class="card-body">
+                                <form>
+                                    <div class="form-group">
+                                        <h5 style="width:710px;"> Câu @(i = i + 1) :  @item.NoiDung </h5>
+
+                                        @if (item.HinhAnh.Length > 0)
+                                        {
+                                            <div class="card-body row">
+                                                <img class=" center-block" style="margin-left:140px" src="@item.HinhAnh.Trim()"
+                                                     alt="anh viet nam anh 1 " width="200px" height="200px" />
+                                            </div>
+
+                                        }
+
+                                    </div>
+                                    @foreach (var item1 in item.Dap_AN)
+                                    {
+                                <div class="form-group">
+
+
+
+                                    <div class="custom-control custom-radio row">
+
+
+                                        @if (item1.TrangThai == true)
+                                        {
+                                            <label class="custom-control-inline text-danger" style="width:700px" ; for="@item1.MA_DAN">
+                                                @item1.NoiDung
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <label class="custom-control-inline" style="width:700px" for="@item1.MA_DAN">
+                                                @item1.NoiDung
+                                            </label>
+                                        }
+
+                                    </div>
+                                    @{ try
+                                        {
+                                            if (item1.HinhAnh.Length > 0)
+                                            {
+                                                <img class=" center-block row" style="margin-left:80px" src="@item1.HinhAnh"
+                                                     alt="anh viet nam anh 1 " width="150px" />
+
+                                            }
+                                        }
+                                        catch { }
+                                    }
+                                </div>
+                                    }
+                                            <label class="text-danger">  Mức đô: nhân biết   </label>
+                                      
+                            </div>
+
+                        }
+
+
+                    }
+                    catch { }
+                    <a class="btn btn-success" href="/Admin/CauHoi/LoadQuestion"> Thêm </a>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+

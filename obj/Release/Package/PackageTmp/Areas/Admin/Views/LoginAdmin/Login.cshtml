@@ -1,0 +1,64 @@
+﻿@model TracNghiemOnline.Modell.TaiKhoan
+<html lang="zxx">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Login</title>
+    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport">
+    <link rel="icon" href="~/assets/img/icon.ico" type="image/x-icon">
+
+    <!-- Fonts and icons -->
+    <script src="~/assets/js/plugin/webfont/webfont.min.js"></script>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lato:300,400,700,900" media="all">
+    <link rel="stylesheet" href="~/assets/css/fonts.min.css" media="all">
+    <script>
+        WebFont.load({
+            google: { "families": ["Lato:300,400,700,900"] },
+            custom: { "families": ["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['../../assets/css/fonts.min.css'] },
+            active: function () {
+                sessionStorage.fonts = true;
+            }
+        });
+    </script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="~/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/assets/css/atlantis.min.css">
+    <!-- CSS Just for demo purpose, don't include it in your project -->
+    <link rel="stylesheet" href="~/assets/css/demo.css">
+</head>
+<body>
+    <div class=" position-relative " style="top:20%">
+        <div class="col-md-4 ml-auto mr-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title text-center">ĐĂNG NHẬP</h4>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("DangNhap", "LoginAdmin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <label>Tên đăng nhập:</label>
+                            @Html.TextBoxFor(model => model.TenDangNhap, new { @class = "form-control", @autofocus = "autofocus", placeholder = "Enter Username" })
+                            @Html.ValidationMessageFor(model => model.TenDangNhap, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu:</label>
+                            @Html.EditorFor(model => model.MatKhau, new { htmlAttributes = new { @class = "form-control", type = "password", placeholder = "Enter Password" } })
+                            @Html.ValidationMessageFor(model => model.MatKhau, "", new { @class = "text-danger" })
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group ">
+                            <button class="btn btn-primary col-12" id="vao" type="submit">Đăng nhập</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>
+
+

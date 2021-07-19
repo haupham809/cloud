@@ -1,0 +1,65 @@
+﻿@model List<TracNghiemOnline.Modell.Phong_Thi>
+@{
+    ViewBag.Title = "Phong";
+    Layout = "~/Views/Share/LayOutHome.cshtml";
+}
+
+<script>
+
+    function Phongthi(ID) {
+
+        var MaPhong = ID;
+        $.ajax({
+            type: 'POST',
+            url: '/TrangChu/PhongThi',
+            data: { MaPhong },
+            success: function (res) {
+                if (res.status == true) {
+
+                    window.location = '/VaoThi/' + MaPhong;
+                }
+                else {
+                    alert(res.status);
+                }
+
+            }
+
+
+        });
+    }
+
+</script>
+
+<section class="py-8">
+    <div class="container-fluid">
+        <div class="row" style="padding:0% 5%">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-3">
+                    <div class="card" style="border:solid 1px rgb(218,220,224);">
+                        <div class="caption" style=" height:70px; border-top-left-radius:9px;border-top-right-radius:9px; padding:20px 10px;background-image: url('https://www.gstatic.com/classroom/themes/img_read.jpg');background-size: cover;">
+                            <h4 class="text-uppercase text-white" style="font-family:Arial">@item.TenPhong</h4>
+                        </div>
+                        <div class="card-body">
+                            <p style="margin-bottom:0px">Lớp học phần: @item.LopHocPhan.TenLop </p>
+                            <p style="margin-bottom:0px">Môn thi: @item.LopHocPhan.MonHoc.TenMon</p>
+                            @if (item.ThoiGianMo != null)
+                            {
+                                <p>Thời gian bắt đầu : @item.ThoiGianMo</p>
+                            }
+                            @if (item.ThoiGianMo == null)
+                            {
+                                <p>Thời gian bắt đầu : Đang lên lịch</p>
+                               <br />
+                            }
+
+
+                        </div>
+                        <div class="card-footer bg-white"><button class="btn" style="border:solid 1px rgb(218,220,224)" id="@item.MaPhong.Trim()" onclick="Phongthi(id)">VÀO THI</button></div>
+                        
+                    </div>
+                </div>
+            }          
+        </div>
+    </div>
+</section>

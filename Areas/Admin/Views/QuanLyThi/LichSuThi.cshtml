@@ -1,0 +1,153 @@
+﻿
+@{
+    ViewBag.Title = "LichSuThi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+<div class="row" style="height:20px;">
+
+</div>
+<div class="col-md-12 ">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">THÔNG TIN SINH VIÊN</h4>
+            </div>
+        </div>
+        <div class="card-body row">
+            <div class="col-lg-6 container">
+                <form>
+                    <div class="row">
+                        <div class="col-lg-3"> <label>Mã sinh viên </label> </div>
+                        <div class="col"> 5951071113</div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-3"> <label>Họ tên</label> </div>
+                        <div class="col"> 5951071113</div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3"> <label>Ngày sinh </label> </div>
+                        <div class="col"> 03/05/2000</div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3"> <label>Cảnh cáo sinh viên</label> </div>
+                        <div class="col"> <select class="form-control  col-5"></select> </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3"> <label>Số điểm trừ</label> </div>
+                        <div class="col"> <select class="form-control  col-5"></select> </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3"> <label>Mã sinh viên </label> </div>
+                        <div class="col"> 5951071113</div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3"> <label>Ghi chu </label> </div>
+                        <div class="col">
+                            <textarea class="col-7" rows="5"></textarea>
+
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row text-center">
+                        <button class="btn btn-primary">
+                            <i class="fa fa-plus"></i>
+                            Lưu
+                        </button>
+                    </div>
+
+                </form>
+
+
+            </div>
+            <div class="col-6">
+                <div class="table-responsive">
+                    <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+
+                        <div class="col-sm-3">
+                            <table class="table-striped dataTable table-bordered" style="padding:3px">
+                                <thead>
+                                    <tr role="row">
+                                        <th class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Thời gian</th>
+                                        <th class="sorting" tabindex="0" aria-controls="add-row" aria-label="Position: activate to sort column ascending">Thực hiện</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="tblGiaoVien">
+
+
+                                    @for (int i = 0; i < 10; i++)
+                                    {
+                                        <tr style="height:20px">
+                                            <td>ssssssssssssssssssssssss</td>
+                                            <td class="col-12">sssssssssssssssssssssssssssssssssssssssssssss</td>
+
+
+                                        </tr>
+
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal thêm sửa*@
+<div class="modal" tabindex="-1" role="dialog" id="modalGiaoVien">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header ">
+                <h5 class="modal-title">THÔNG TIN GIÁO VIÊN</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="idGV" value="" />
+                <p>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Thời gian</label>
+                        <input type="text" class="form-control" id="maGV" placeholder="Mã giáo viên">
+                        <label for="exampleFormControlInput1">T</label>
+                        <input type="text" class="form-control" id="tenGV" placeholder="Tên giáo viên">
+
+                        <label>Chọn ngành</label>
+
+                    </div>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal Xóa*@
+<div class="modal" tabindex="-1" role="dialog" id="modalConfirm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header ">
+                <h5 class="modal-title">CẢNH BÁO</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="ma" value="" />
+                Bạn có chắc chắn muốn xóa?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnYes">Xác nhận</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+

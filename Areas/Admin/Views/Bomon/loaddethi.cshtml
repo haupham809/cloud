@@ -1,0 +1,109 @@
+﻿@model TracNghiemOnline.Modell.Bo_De
+@{
+    ViewBag.Title = "LoadDeThi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    string mess = (string)ViewBag.Mess;
+}
+
+<div class="card">
+
+    <div class="card">
+
+        <div class="card mb-4">
+            @{
+                int i = 0;
+                foreach (var item in Model.CauHois)
+                {
+
+
+
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group">
+                                <h5 style="width:710px;"> Câu @(i=i+1) :  @item.Kho_CauHoi.NoiDung </h5>
+
+                                @{
+                                    try
+                                    {
+                                        if (item.Kho_CauHoi.HinhAnh.Length>0)
+                                        {
+                                            <div class="card-body ">
+                                                <img class="img-circle center-block" style="margin-left:140px" src="@item.Kho_CauHoi.HinhAnh"
+                                                     alt="anh viet nam anh 1 " width="400px" height="400px" />
+                                            </div>
+
+                                        }
+
+                                    }
+                                    catch { }
+
+                                }
+
+
+                            </div>
+                            @foreach (var item1 in item.Kho_CauHoi.Dap_AN)
+                            {
+                                <div class="form-group">
+                                    @{ try
+                                        {
+                                            if (item1.HinhAnh.Length>0)
+                                            {
+                                                <img class="img-circle center-block" style="margin-left:80px" src="@item1.HinhAnh"
+                                                     alt="anh viet nam anh 1 " width="150px" />
+
+                                            }
+                                        }
+                                        catch { }
+                                    }
+
+
+                                    <div class="custom-control custom-radio">
+
+                                        @if (item1.TrangThai == true)
+                                        {
+                                            <label class="custom-control-inline text-danger" style="width:700px;color:orangered " for="@item1.MA_DAN">
+                                                @item1.NoiDung
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <label class="custom-control-inline" style="width:700px" for="@item1.MA_DAN">
+                                                @item1.NoiDung
+                                            </label>
+                                        }
+
+
+
+                                    </div>
+                                </div>
+                            }
+
+                        </form>
+                    </div>
+
+
+                }
+                if (Model.CauHois.Count > 0)
+                {
+                    if (mess.Equals("Tao"))
+                    {
+                        <a id="txtThem" class=" col-1 btn  btn-round btn-success" href="/Admin/Bomon/themde"> Tạo Đề </a>
+                    }
+                    else
+                    {
+                        <a id="txtTroVe" class=" col-1 btn btn-round btn-primary" href="/Admin/Bomon/DSDethitheobm"> Quay Lại </a>
+                    }
+
+
+                }
+
+            }
+        </div>
+
+
+    </div>
+
+
+
+
+

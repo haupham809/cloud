@@ -1,0 +1,260 @@
+﻿
+@{
+    ViewBag.Title = "BoMon";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+
+@using TracNghiemOnline.Modell
+@model IEnumerable<BoMon>
+
+
+
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH BỘ MÔN</h4>
+                <button class="btn btn-primary btn-round ml-auto" data-toggle="modal" id="btnAdd" data-target="#addRowModal">
+                    <i class="fa fa-plus"></i>
+                    Thêm bộ môn
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                    <div class="col-sm-12">
+                        <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                            <thead>
+                                <tr role="row">
+                                    <th class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Mã bộ môn</th>
+                                    <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Tên ngành</th>
+
+                                    <th style="width: 15%;" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblboMon">
+                                @foreach (var item in new TracNghiemOnlineDB().BoMons.Where(x => x.TrangThai == true).ToList())
+                                {
+                                    <tr id="@item.Ma_BoMon">
+
+                                        <td>@item.Ma_BoMon</td>
+
+                                        <td>@item.Ten</td>
+
+                                        <td>
+
+                                            <button name="Update" class="btn btn-xs btn-primary"><i class="far fa-edit" aria-hidden="true"></i></button>&ensp;
+                                            <button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true" style="color:white"></i></button>
+
+                                        </td>
+
+                                    </tr>
+                                }
+
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+<div class="modal" tabindex="-1" role="dialog" id="modalBoMon">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">THÔNG TIN BỘ MÔN</h5>
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="idNganh" value="" />
+                <p>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Bộ Môn</label>
+                        <input type="text" class="form-control" id="tenNganh" placeholder="Tên Bộ Môn">
+                    </div>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="modalConfirm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">CẢNH BÁO</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="ma" value="" />
+                Bạn có chắc chắn muốn xóa?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnYes">Xác nhận</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+
+        $(document).ready(function () {
+            loadDSGV();
+        });
+        //load du lieu
+        function loadDSGV() {
+            $('#modalBoMon').modal('hide');
+            $.ajax({
+                url: '/Admin/HeThong/dsBoMon', type: 'get',
+
+                success: function (data) {
+                    if (data.code == 200) {
+                        $('#tblboMon').empty();
+                        $.each(data.dsNganh, function (k, v) {
+                            let tr = '<tr id = "' + v.MaNganh + '">';
+                            tr += '<td>' + v.MaNganh + '</td>';
+                            tr += '<td>' + v.TenNganh + '</td>';
+                            tr += '<td>';
+                            tr += '<button name="Update" class="btn btn-xs btn-primary"><i class="far fa-edit" aria-hidden="true"></i></button>&ensp;';
+                            tr += '<button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true" style="color:white"></i></button>';
+                            tr += '</td > ';
+                            tr += '</tr > ';
+                            $('#tblboMon').append(tr);
+
+                        });
+
+                    
+                    }
+                }
+            });
+        };
+
+        //show form
+        $('#btnAdd').click(function () {
+            $('#modalBoMon').modal();
+            $('#idNganh').val('');
+        })
+        //them nganh
+        $('#btnSubmit').click(function () {
+            
+            let tenNganh = $('#tenNganh').val().trim();
+
+            if (tenNganh.length == 0) {
+                alert("Vui lòng nhập đầy đủ thông tin");
+                return;
+            }
+            let idNganh = $('#idNganh').val().trim()
+            if (idNganh.length == 0) {
+                //Add
+                $.ajax({
+                    url: '/Admin/HeThong/AddBoMon', type: 'post',
+                    data: {
+                       
+                        tenNganh: tenNganh
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            alert(data.msg);
+                            loadDSGV();
+                        } else {
+                            alert.data(msg);
+                        }
+                    }
+                });
+            } else {
+                //Update
+                $.ajax({
+                    url: '/Admin/HeThong/UpdateBoMon', type: 'post',
+                    data: {
+                        maNganh: idNganh,
+                        tenNganh: tenNganh
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            alert(data.msg);
+                            loadDSGV();
+                            $('#modalBoMon').modal('hide');
+                        } else {
+                            alert.data(msg);
+                        }
+                    }
+                });
+            }
+
+
+        });
+        //click button Sua
+        $(document).on('click', "button[name = 'Update']", function () {
+            let ma = $(this).closest('tr').attr('id');
+            let ten = $(this).closest('tr').find("td:eq(1)").text();
+            $('#idNganh').val(ma);
+            $('#maNganh').val(ma);
+            $('#tenNganh').val(ten);
+            $('#modalBoMon').modal();
+            @*
+            $.ajax({
+                url: '/Admin/HeThong/GetMaNganh',
+                type: 'get',
+                data: {
+                    maNganh: ma
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        $('#maNganh').val(data.idNganh.Ma_Nganh);
+                        $('#tenNganh').val(data.idNganh.TenNganh);
+
+                        $('#idNganh').val(ma);
+
+                        $('#modalBoMon').modal();
+                    } else {
+                        alert.data(msg);
+                    }
+                }
+
+            })*@
+        });
+        //xoa nganh
+        $(document).on('click', "button[name = 'Delete']", function () {
+            let ma = $(this).closest('tr').attr('id');
+            $('#ma').val(ma);
+            $('#modalConfirm').modal();
+        });
+
+        $('#btnYes').click(function () {
+            let maNganh = $('#ma').val().trim();
+            $.ajax({
+                url: '/Admin/HeThong/DeleteBoMon', type: 'post',
+                data: {
+                    maNganh: maNganh,
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        alert(data.msg);
+                        loadDSGV();
+                        $('#modalConfirm').modal('hide');
+                    } else {
+                        alert.data(msg);
+                    }
+                }
+            });
+
+
+
+        });
+    </script>
+
+}
+

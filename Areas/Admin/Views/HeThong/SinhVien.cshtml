@@ -1,0 +1,299 @@
+﻿@model TracNghiemOnline.Modell.Lop
+@using TracNghiemOnline.Modell;
+
+@{
+    ViewBag.Title = "SinhVien";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+
+
+<div class="row" style="height:20px;">
+
+</div>
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH SINH VIÊN</h4>
+                <button class="btn btn-primary btn-round ml-auto" data-toggle="modal" id="btnAdd" data-target="#addRowModal">
+                    <i class="fa fa-plus"></i>
+                    Thêm sinh viên
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                  
+                        <div class="col-sm-12">
+                            <table id="add-row" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                                <thead>
+                                    <tr role="row">
+                                        <th class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Mã sinh viên</th>
+                                        <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Tên sinh viên</th>
+                                        <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Ngày sinh</th>
+                                        <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Địa chỉ</th>
+                                        <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Lớp</th>
+                                        <th style="width: 15%;" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending"></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="tblSinhVien">
+                             @foreach (var item in new TracNghiemOnlineDB().SinhViens.Where(x=>x.DaXoa==null).ToList())
+                             {
+                                    <tr id="@item.MaSV">
+                                        <td>@item.MaSV</td>
+                                        <td>@item.Ten</td>
+                                        <td> @item.NgaySinh</td>
+                                        <td>@item.DiaChi</td>
+                                        <td>@item.Lop.TenLop</td>
+                            
+                                        <td>
+                                          
+                                          <button name="Update" class="btn btn-xs btn-primary"><i class="far fa-edit" aria-hidden="true"></i></button>&ensp;
+                                          <button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true" style="color:white"></i></button>
+                                       
+                                        </td>
+                                    
+                                    </tr>
+
+
+                             }
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="modalSinhVien">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">THÔNG TIN SINH VIÊN</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="idSV" value="" />
+                <p>
+                    <div class="form-group">
+                        <label>Mã sinh viên</label>
+                        <input type="text" class="form-control" id="maSV" placeholder="Mã sinh viên">
+                        <label>Tên sinh viên</label>
+                        <input type="text" class="form-control" id="tenSV" placeholder="Tên sinh viên">
+                        <div class="form-group">
+                            <label>Ngày sinh</label>
+                            <input class="form-control" type="date" id="ngaySinh" name="DateOfBirth" data-date-format />
+                            <input class="form-control" id="NTL" name="NTL" type="text" disabled />
+                        </div>
+
+                        <label>Địa chỉ: </label>
+                        <input type="text" class="form-control" id="diaChi" placeholder="Địa chỉ" />
+                        <label>Lớp: </label>
+                        <div class="form-group">
+                            @if (ViewBag.lstLop != null)
+                            {
+                                @Html.DropDownListFor(model => model.Ma_Lop, ViewBag.lstLop as SelectList, "--Chọn lớp--", new { @class = "form-control" })
+                            }
+                        </div>
+                    </div>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="modalConfirm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">CẢNH BÁO</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="ma" value="" />
+                Bạn có chắc chắn muốn xóa?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnYes">Xác nhận</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+
+        $(document).ready(function () {
+            loadDSSV();
+
+            dtp();
+
+
+        });
+        //picker
+        function dtp() {
+            $("#ngaySinh").datepicker();
+        };
+        //load du lieu
+        function loadDSSV() {
+            $.ajax({
+                url: '/Admin/HeThong/dsSinhVien', type: 'get',
+
+                success: function (data) {
+                    if (data.code == 200) {
+                        $('#tblSinhVien').empty();
+                        $.each(data.dsSinhVien, function (k, v) {
+                            let tr = '<tr id = "' + v.MaSV + '">';
+                            tr += '<td>' + v.MaSV + '</td>';
+                            tr += '<td>' + v.TenSV + '</td>';
+                            tr += '<td>' + v.NgaySinh + '</td>';
+                            tr += '<td>' + v.DiaChi + '</td>';
+                            tr += '<td id = "' + v.MaLop + '">' + v.TenLop + '</td>';
+                            tr += '<td>';
+                            tr += '<button name="Update" class="btn btn-xs btn-primary"><i class="far fa-edit" aria-hidden="true"></i></button>&ensp;';
+                            tr += '<button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true" style="color:white"></i></button>';
+                            tr += '</td > ';
+                            tr += '</tr > ';
+
+                            $('#tblSinhVien').append(tr);
+
+                        });
+                        $('#Table').DataTable({
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {
+                                    extend: 'excel',
+                                    oriented: 'potrait',
+                                    pageSize: 'Legal',
+                                    title: ' Data Pasien',
+                                    download: 'open'
+
+                                },
+                                'copy',
+                                'excel',
+                                'csv',
+                                'pdf'
+                            ]
+                        });
+
+                    }
+                }
+            });
+        };
+        //show form
+        $('#btnAdd').click(function () {
+            $('#modalSinhVien').modal();
+
+            $('#idSV').val('');
+        })
+        $('#btnSubmit').click(function () {
+            let maSV = $('#maSV').val().trim();
+            let tenSV = $('#tenSV').val().trim();
+            let ngaySinh = $('#ngaySinh').val();
+            let diaChi = $('#diaChi').val();
+            let maLop = $('#Ma_Lop').val();
+
+            if (maSV.length == 0 || tenSV.length == 0) {
+                alert("Vui lòng nhập đầy đủ thông tin");
+                return;
+            }
+            let idSV = $('#idSV').val().trim();
+            if (idSV.length == 0) {
+                //Add
+                $.ajax({
+                    url: '/Admin/HeThong/AddSinhVien', type: 'post',
+                    data: {
+                        maSV: maSV,
+                        tenSV: tenSV,
+                        ngaySinh: ngaySinh,
+                        diaChi: diaChi,
+                        maLop: maLop
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            alert(data.msg);
+                            loadDSSV();
+                            $('#modalSinhVien').modal('hide');
+                        } else {
+                            alert(data.msg);
+
+                        }
+                    }
+                });
+            } else {
+                //Update
+                $.ajax({
+                    url: '/Admin/HeThong/UpdateSinhVien', type: 'post',
+                    data: {
+                        maSV: maSV,
+                        tenSV: tenSV,
+                        ngaySinh: ngaySinh,
+                        diaChi: diaChi,
+                        maLop: maLop
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            alert(data.msg);
+                            loadDSSV();
+                            $('#modalSinhVien').modal('hide');
+                        } else {
+                            alert.data(msg);
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', "button[name = 'Update']", function () {
+            let ma = $(this).closest('tr').attr('id');
+            let ten = $(this).closest('tr').find("td:eq(1)").text();
+            let diachi = $(this).closest('tr').find("td:eq(3)").text();
+            let ngaysinh = $(this).closest('tr').find("td:eq(2)").text();
+            let malop = $(this).closest('tr').find("td:eq(4)").attr('id');
+            $('#idSV').val(ma);
+            $('#maSV').val(ma);
+            $('#tenSV').val(ten);
+            $('#ngaySinh').val(ngaysinh);
+            $('#diaChi').val(diachi);
+            $('#Ma_Lop').val(malop);
+            $('#modalSinhVien').modal();
+        });
+        $(document).on('click', "button[name = 'Delete']", function () {
+            let ma = $(this).closest('tr').attr('id');
+            $('#ma').val(ma);
+            $('#modalConfirm').modal();
+
+        });
+        $('#btnYes').click(function () {
+            let maSV = $('#ma').val().trim();
+            $.ajax({
+                url: '/Admin/HeThong/DeleteSinhVien', type: 'post',
+                data: {
+                    maSV: maSV,
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        alert(data.msg);
+                        loadDSSV();
+                        $('#modalConfirm').modal('hide');
+                    } else {
+                        alert.data(msg);
+                    }
+                }
+            });
+        });
+
+
+
+    </script>
+
+}

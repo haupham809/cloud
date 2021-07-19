@@ -1,0 +1,65 @@
+﻿@model List<TracNghiemOnline.Modell.Phong_Thi>
+@{
+    ViewBag.Title = "DanhGiaKetQuahocTap";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+
+
+<div class="col-md-12">
+    <input hidden="hidden" id="txtmon" value="@ViewBag.id" />
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH PHÒNG THI</h4>
+
+            </div>
+        </div>
+        <div style="width:auto; height:3px; background-color:rgb(248,249,250);"></div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                    <div class="col-sm-12">
+                        <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                            <thead>
+
+                                <tr>
+                                    <th>Mã Phòng </th>
+                                    <th>Tên phòng</th>
+                                    <th>Lớp Học Phần </th>
+                                    <th>Thời Gian Bắt Đầu  </th>
+                                    <th>Thời Gian Kết Thúc </th>
+
+                                    <th></th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td> @item.MaPhong </td>
+                                        <td> @item.TenPhong</td>
+                                        <td> @item.LopHocPhan.TenLop </td>
+                                        <td> @item.ThoiGianMo</td>
+
+                                        <td> @item.ThoiGianDong</td>
+                                        <td>
+                                            <a href="/Admin/QuanLyThi/KetQuaphongthi/@item.MaPhong" class="btn btn-primary btn-sm">
+                                                <span>Xem kết quả</span>
+                                            </a>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

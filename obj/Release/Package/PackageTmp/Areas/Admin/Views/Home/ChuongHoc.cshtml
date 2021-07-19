@@ -1,0 +1,283 @@
+﻿@model List<TracNghiemOnline.Modell.Chuong_Hoc>
+@{
+    ViewBag.Title = "ChuongHoc";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    // bool check = (bool)ViewBag.check;
+}
+@using TracNghiemOnline.ComMon;
+@using TracNghiemOnline.Modell;
+<div class="col-md-12">
+    <input hidden="hidden" id="txtmon" value="@ViewBag.id" />
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH MÔN HỌC</h4>
+                @{
+                    var session = (TaiKhoan)Session[ComMonStants.UserLogin];
+                    if (session.ChưcVu.Equals("BoMon"))
+                    {
+
+
+                        <button class="btn btn-primary btn-round ml-auto" data-toggle="modal" id="btnAdd" data-target="#addRowModal">
+                            <i class="fa fa-plus"></i>
+                            Thêm chương
+                        </button><input id="txtquyen" hidden value="1" />
+                    }
+                    else
+                    {
+                        <input id="txtquyen" hidden value="2" />
+                    }
+                }
+
+            </div>
+        </div>
+        <div style="width:auto; height:3px; background-color:rgb(248,249,250);"></div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+
+                    <div class="col-sm-12">
+                        <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                            <thead>
+                                <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                                    <thead>
+
+                                        <tr>
+                                            <th>Mã Chương</th>
+                                            <th>Tên Chương</th>
+                                            <th> Số Câu Hỏi </th>
+                                            <th></th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tblchuong">
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr id="@item.Ma_Chuong">
+                                                <td>   @item.Ma_Chuong </td>
+
+                                                <td>   @item.TenChuong</td>
+                                                <td>  @item.Kho_CauHoi.Count </td>
+                                                <td>
+                                                    <a href="/Admin/CauHoi/Index/@item.Ma_Chuong" class="btn btn-xs btn-primary">
+                                                        <span><i class="far fa-eye"></i></span>
+                                                    </a>&ensp;
+                                                    @{
+                                                        // var session = (TaiKhoan)Session[ComMonStants.UserLogin];
+                                                        if (session.ChưcVu.Equals("BoMon"))
+                                                        {
+                                                            <button name="Update" class="btn btn-xs btn-success">
+                                                                <span><i class="far fa-edit"></i></span>
+                                                            </button>
+                                                            <button name="Delete" class="btn btn-xs btn-danger">
+                                                                <span><i class="far fa-trash-alt"></i></span>
+                                                            </button>
+                                                        }
+                                                    }
+
+                                                </td>
+                                            </tr>
+
+                                        }
+
+                                    </tbody>
+
+
+                                </table>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal" tabindex="-1" role="dialog" id="modalBoMon">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-dark" style="color:white">
+                <h5 class="modal-title">THÔNG TIN CHƯƠNG</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="idNganh" value="" />
+                <p>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Tên Chương</label>
+                        <input type="text" class="form-control" id="tenNganh" placeholder="Tên Chương">
+                    </div>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnSubmit">Xác nhận</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="modalConfirm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-dark">
+                <h5 class="modal-title">CẢNH BÁO</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="ma" value="" />
+                Bạn có chắc chắn muốn xóa?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnYes">Xác nhận</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+
+        $(document).ready(function () {
+            loadDSGV();
+            $('#btnAdd').click(function () {
+                $('#modalBoMon').modal();
+                $('#idNganh').val('');
+            })
+            //them nganh
+            $('#btnSubmit').click(function () {
+
+                let tenNganh = $('#tenNganh').val().trim();
+
+                if (tenNganh.length == 0) {
+                    alert("Vui lòng nhập đầy đủ thông tin");
+                    return;
+                }
+                let idNganh = $('#idNganh').val();
+                if (idNganh.length == 0) {
+                    //Add
+                    $.ajax({
+                        url: '/Admin/Monhoc/addChuong', type: 'post',
+                        data: {
+                            ma: $('#txtmon').val(),
+                            ten: tenNganh
+                        },
+                        success: function (data) {
+                            if (data.code == 200) {
+                                alert(data.msg);
+                                loadDSGV();
+                            } else {
+                                alert.data(msg);
+                            }
+                        }
+                    });
+                } else {
+                    //Update
+
+        
+                    $.ajax({
+                        url: '/Admin/Monhoc/UpdateChuong', type: 'post',
+                        data: {
+                            ma: idNganh,
+                            ten: tenNganh
+                        },
+                        success: function (data) {
+                            if (data.code == 200) {
+                                alert(data.msg);
+                                loadDSGV();
+                                $('#modalBoMon').modal('hide');
+                            } else {
+                                alert(data.msg);
+                            }
+                        }
+                    });
+                }
+
+
+            });
+            //click button Sua
+            $(document).on('click', "button[name ='Update']", function () {
+                let ma = $(this).closest('tr').attr('id');
+                let ten = $(this).closest('tr').find("td:eq(1)").text();
+                $('#idNganh').val(ma);
+                $('#tenNganh').val(ten);
+                $('#modalBoMon').modal();
+
+            });
+            //xoa nganh
+            $(document).on('click', "button[name ='Delete']", function () {
+                let ma = $(this).closest('tr').attr('id');
+                $('#ma').val(ma);
+          
+
+                $('#modalConfirm').modal();
+            });
+
+            $('#btnYes').click(function () {
+                let maNganh = $('#ma').val().trim();
+
+                $.ajax({
+
+                    url: '/Admin/Monhoc/DeleteChuong', type: 'post',
+                    data: {
+                        ma: maNganh,
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            alert(data.msg);
+                            loadDSGV();
+                            $('#modalConfirm').modal('hide');
+                        } else {
+                            alert.data(msg);
+                        }
+                    }
+                });
+
+
+
+            }); 
+        });
+        //load du lieu
+        function loadDSGV() {
+         var quyen=   $('#txtquyen').val();
+            $('#modalBoMon').modal('hide');
+            $('#idNganh').val("");
+
+            $('#tenNganh').val("");
+            $.ajax({
+                url: '/Admin/Monhoc/dschuong', type: 'get',
+                data: { ma: $('#txtmon').val() },
+                success: function (data) {
+                    if (data.code == 200) {
+                        $('#tblchuong').empty();
+                        $.each(data.dsNganh, function (k, v) {
+                            let tr = '<tr id = "' + v.Ma + '">';
+                            tr += '<td>' + v.Ma + '</td>';
+                            tr += '<td>' + v.Ten + '</td>';
+                            tr += '<td>' + v.SoCau + '</td>';
+                            tr += '<td>';
+                            tr += ' <a href="/Admin/CauHoi/Index/' + v.Ma + '" class="btn btn-xs btn-primary">';
+                            tr += '<span><i class="far fa-eye"></i></span></a>&ensp;';
+                            if (quyen == 1) {
+                                tr += '<button name="Update" class="btn btn-xs btn-success"><i class="far fa-edit" aria-hidden="true"></i></button> &ensp;';
+                                tr += '<button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true" style="color:white"></i></button>';
+                            }
+                           
+                            tr += '</td > ';
+                            tr += '</tr > ';
+                            $('#tblchuong').append(tr);
+
+                        });
+
+                    }
+                }
+            });
+        };
+
+        //show form
+       
+    </script>
+
+}

@@ -1,0 +1,153 @@
+﻿@model TracNghiemOnline.Modell.LichNop
+
+@{
+    ViewBag.Title = "TaoLich";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    var session = (TaiKhoan)Session[ComMonStants.UserLogin];
+}
+@using TracNghiemOnline.Modell;
+@using TracNghiemOnline.ComMon;
+
+<script>
+    function Them(id) {
+        var CheckBox = $('.txtCheckBox');
+        var chuoi="";
+   
+        $.each(CheckBox, function (k, v) {
+            if ($(this).prop("checked") == true) {
+               
+                chuoi += $(this).val() + "/";
+ 
+            }
+        });
+
+
+            $.ajax({
+                type: 'POST',
+                url: '/Admin/BoMon/DSGV',
+                data: {
+                    chuoi: chuoi,
+                },
+                success: function (res) {
+                   
+                }
+
+            });
+        
+    }
+
+</script>
+
+<div class="row" style="height:20px;">
+
+</div>
+
+<div class="col-md-12">
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="card">
+            <div class="card-header text-center">
+                <div class="d-flex align-items-center text-center">
+                    <h4 class="card-title"> THÔNG TIN LỊCH NỘP  </h4>
+
+                    <div class="form-group ml-auto">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Tạo" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+
+                <div class="form-horizontal">
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="control-label col-md-2"> Nôi dung  </label>
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.NoiDung, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.NoiDung, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="control-label col-md-2"> Thời Gian  </label>
+                                <div class="col-md-10">
+
+                                    @Html.EditorFor(model => model.ThoiGian, new { htmlAttributes = new { @class = "form-control", type = "datetime-local" } })
+                                    @Html.ValidationMessageFor(model => model.ThoiGian, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="control-label col-md-2"> Môn học </label>
+                                <div class="col-md-10">
+
+                                    @Html.DropDownListFor(model => model.MaMon, new SelectList(new TracNghiemOnlineDB().MonHocs.Where(x=>x.MaBoMon.Equals(session.TaiKhoan1)).ToList(), "Ma_Mon", "TenMon"), "--Chọn môn--", new { @class = "form-control" });
+                                    @Html.ValidationMessageFor(model => model.MaMon, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                            <h3> Danh sách giáo viên</h3>
+                            <div class="col-sm-12">
+                                <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                                    <thead>
+                                        <tr role="row">
+                                            <th style="width: 15%;" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending"></th>
+                                            <th class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Mã giáo viên</th>
+                                            <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Tên giáo viên</th>
+
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="tblGiaoVien">
+
+
+                                        @foreach (var item in new TracNghiemOnlineDB().GiaoViens.Where(x => x.TrangThai == true && x.MaBoMon.Equals(session.TaiKhoan1)).ToList())
+                                        {
+                                            <tr id="@item.MaGV" >
+
+                                                <td><input type="checkbox" onclick="Them(id)" value="@item.MaGV" class="txtCheckBox"  /></td>
+                                                <td>@item.MaGV</td>
+
+                                                <td>@item.TenGV</td>
+
+
+
+
+                                            </tr>
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div>
+                    @Html.ActionLink("Back to List", "Index")
+                </div>
+
+
+            </div>
+        </div>}
+    </div>
+
+

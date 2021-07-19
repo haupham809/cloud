@@ -1,0 +1,140 @@
+﻿
+@{
+    ViewBag.Title = "ChonCauhoi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    List<TracNghiemOnline.Modell.Kho_CauHoi> cauhoi = (List<TracNghiemOnline.Modell.Kho_CauHoi>)ViewBag.Question;
+}
+
+@section Jsfooter{
+    <script>
+
+        $(document).ready(function () {
+
+            $('#btnTao').click(function () {
+
+                var arr = [];
+
+                var Check = document.getElementsByClassName('txtcheck');
+
+                for (var i = 0; i < Check.length; i++) {
+                    arr.push({
+                        Ma_CauHoi: Check[i].value,
+
+                    });
+                }
+
+
+                if (arr.length > 0) {
+                    $.ajax({
+                        url: "/Home/ChonCauHoi",
+                        data: { CauHoi: JSON.stringify(arr) },
+                        type: 'GET',
+                        success: function (res) {
+
+                            window.location = "/Admin/Home/LoadDeThi"
+
+                        }
+                    });
+                } else {
+                    alert("Mời Chọn Câu Hỏi");
+                }
+
+
+            });
+
+
+
+            $('#txtChon').click(function () {
+
+                if ($(this).prop('checked') == true) {
+                    $.each($('.txtcheck'), function () {
+                        $(this).prop('checked', true);
+                    });
+                }
+                else {
+
+                    $.each($('.txtcheck'), function () {
+                        $(this).prop('checked', false);
+                    });
+                }
+
+
+            })
+
+
+
+
+
+        });
+
+
+
+
+
+    </script>
+
+}
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH CÂU HỎI</h4>
+             
+
+            </div>
+            <div style="width:auto; height:3px; background-color:rgb(248,249,250);">
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+
+                        <div class="col-sm-12">
+                            <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="txtChon" /> </th>
+                                        <th>Nôi Dung</th>
+                                        <th> Mức Độ </th>
+                                        <th></th>
+
+                                    </tr>
+                                </thead>
+                               
+                                <tbody>
+                                    @foreach (var item in cauhoi)
+                                    {
+                                        <tr>
+                                            <td> <input class="txtcheck" type="checkbox" value="@item.Ma_CauHoi" /> </td>
+
+                                            <td> @item.NoiDung</td>
+                                            <td>  @item.MucDo </td>
+                                            <td>
+                                                <a href="/Admin/CauHoi/Index/@item.Ma_Chuong" class="btn btn-xs btn-primary">
+                                                    <span><i class="far fa-eye"></i></span>
+                                                </a>&ensp;
+                                            </td>
+                                        </tr>
+
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                        <div class="card-body" style="text-align:center">
+                            <button class="badge-success btn-round btn" id="btnTao" type="button"> Hoàn Thành  </button>
+                            <a href="/Admin/Home/TaoDeThi"   class="badge-dark btn-round btn"  type="reset"> Quay Lại </a>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+</div>

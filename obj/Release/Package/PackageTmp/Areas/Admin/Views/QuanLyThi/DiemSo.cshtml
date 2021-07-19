@@ -1,0 +1,160 @@
+﻿@model TracNghiemOnline.Model.DanhGia
+@{
+    ViewBag.Title = "DiemSo";
+    Layout = null;
+
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Trắc Nghiệm Online</title>
+
+
+    <link href="~/Content/css/styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+
+
+
+</head>
+<body>
+
+    <div class="container-fluid">
+
+        <div class="col-10" style="margin-left:10%">
+            <div class=" card-body mb-4">
+
+                <div class="card card-header">
+                    <div class="d-flex align-items-center">
+                        <h4 class="card-title text-center py-3">Kết Quả Bài Làm</h4>
+                        <a class="btn btn-primary btn-round ml-auto " href="/Admin/QuanLyThi/TroVe"> Quay Về</a>
+                    </div>
+                </div>
+                <div class="card-body ">
+
+                    <div class="card">
+                        <div class="card-body">
+                            MaSV :   @Model.ketQuaThi.De_Thi.Ma_SV
+
+                        </div>
+
+                        <div class="card-body"> MaSV :   @Model.ketQuaThi.De_Thi.SinhVien.Ten  </div>
+                        <div class="card-body"> Số Câu Đúng :   @Model.ketQuaThi.SoCauDung Câu </div>
+                        <div class="card-body"> Số Câu Sai :    @Model.ketQuaThi.SoCauSai Câu </div>
+                        <div class="card-body"> Điểm Số  :     @Model.ketQuaThi.DiemSo  Điểm </div>
+
+
+
+                        <div class="container">
+                            <div class="card-body ">
+                                @{
+                                    int dem = 0;
+                                    foreach (var item in Model.ketQuaThi.De_Thi.CauHoiDeThis)
+                                    {
+
+
+                                        dem++;
+                                        <h4 class=" card-body chon" id="@item.Kho_CauHoi.Ma_CauHoi">Câu @dem )@item.Kho_CauHoi.NoiDung </h4>
+                                        try
+                                        {
+                                            if (item.Kho_CauHoi.HinhAnh.Length > 0)
+                                            {
+                                                <div class="row" style="margin-top:0px;margin-left:10%">
+                                                    <img src="@item.Kho_CauHoi.HinhAnh" width="200">
+                                                </div>}
+                                        }
+                                        catch { }
+
+
+                                        foreach (var item1 in item.Kho_CauHoi.Dap_AN)
+                                        {
+                                            if (Model.ketQuaThi.De_Thi.Da_SVLuaChon.ToList().Exists(x => x.Ma_DAN == item1.MA_DAN && item1.TrangThai == true))
+                                            {
+                                                <div class="row" style="margin-top:0px;margin-left:2.2%">
+                                                    <label class="form-check-label" for="flexRadioDefault">
+                                                        <i style="font-size: 1rem;margin-top:-3px; color: #44ad57" class=" form-check-input bi bi-check-circle-fill" name="flexRadioDefault" id="flexRadioDefault1"></i>'
+                                                        @item1.NoiDung
+
+                                                    </label>
+                                                </div>
+
+                                            }
+                                            else
+                                            {
+                                                if (item1.TrangThai == true)
+                                                {
+                                                    <div class="row" style="margin-top:0px;margin-left:2.5%">
+                                                        <label class="form-check-label text-success" for="flexRadioDefault1">
+                                                            <input class="form-check-input" disabled type="radio" name="flexRadioDefault" id="flexRadioDefault2">
+                                                            @item1.NoiDung
+                                                        </label>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    if (Model.ketQuaThi.De_Thi.Da_SVLuaChon.ToList().Exists(x => x.Ma_DAN == item1.MA_DAN && item1.TrangThai == false))
+                                                    {
+                                                        <div class="row" style="margin-top:0px;margin-left:2.2%">
+                                                            <label class="form-check-label" for="flexRadioDefault1">
+                                                                <i style="font-size: 1rem;margin-top:-3px;color: #9b0000" class="form-check-input bi bi-x-circle-fill" name="flexRadioDefault" id="flexRadioDefault1"></i>
+                                                                @item1.NoiDung
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="row" style="margin-top:0px;margin-left:2.5%" ;>
+                                                            <label class="form-check-label" for="@item1.MA_DAN">
+                                                                <input class="form-check-input txtch" disabled type="radio" value="@item.Kho_CauHoi.Ma_CauHoi" name="@item.Kho_CauHoi.Ma_CauHoi" id="@item1.MA_DAN">
+                                                                @item1.NoiDung
+                                                            </label>
+                                                        </div>
+                                                    }
+
+
+
+                                                }
+                                                try
+                                                {
+
+                                                    if (item1.HinhAnh.Length > 0)
+                                                    {
+                                                        <div class="row card-header" style="margin-top:0px;margin-left:6%" ;>
+                                                            <img src="@item1.HinhAnh" width="200">
+                                                        </div>}
+                                                }
+                                                catch { }
+
+
+                                            }
+
+
+                                        }
+                                    }
+
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+
+</body>
+</html>
+

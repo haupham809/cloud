@@ -1,0 +1,256 @@
+﻿@model List<TracNghiemOnline.Modell.Kho_CauHoi>
+@{
+    ViewBag.Title = "DapAn";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+
+}
+@section scripts{
+    <script>
+        var cout = 20000;
+        var dem = 2000;
+        var check = false;
+    
+        function readURL(input) {
+
+            if (input.files && input.files[0]) {
+
+
+                var img = $('.file-upload-content');
+                $.each(img, function (k, v) {
+                    if (v.id == input.id) {
+                        $(this).empty();
+                        var formdata = new FormData();
+                        formdata.append('file', input.files[0]);
+                        var let = "";
+                        $.ajax({
+                            type: 'POST',
+                            url: '/Admin/CauHoi/Saveanh',
+                            contentType: false, //Khong co hear
+                            processData: false,//Khong Xu Ly Du Lieu
+                            data: formdata,
+                            success: function (data) {
+                                var let = `<div class="col-auto">
+                  <input class="txtlinkHinh" value="`+ data.path + `" id="` + v.id + `" hidden />
+                                    <img class="file-upload-image"  width="200px" id="`+ v.id + `"  src="` + data.path + `" alt="your image" />
+                                </div>
+                                <i class="col-auto bi bi-x-circle-fill remove-image " onclick="removeUpload(this)"   id="`+ v.id + `" style="margin-left:-4% ;margin-top:-1%; font-size: 2rem; color: #ff0000" ></i>`;
+                                $(v).append(let);
+                                $(v).show();
+                                $(input).val("");
+                            }
+                        });
+
+
+                    }
+                })
+
+            };
+        }
+
+        function removeUpload(anh) {
+
+            var hinh = $('.file-upload-content');
+            $.each(hinh, function (k, v) {
+                if (v.id == anh.id) {
+                    $(v).empty();
+                    $(v).hide();
+
+                }
+            })
+
+        }
+
+        function removeUploadfrm(anh) {
+
+            var hinh = $('.frmCH');
+
+            $.each(hinh, function (k, v) {
+                if (v.id == anh.id) {
+                    $(this).empty();
+                    $(this).hide();
+                }
+            })
+
+        }
+
+   
+        var CH = [];
+        $('#Them').click(function () {
+            dem = -1;
+
+            var classch = $('.txtCH');
+            $.each(classch, function (k, v) {
+                if ($(this).text().trim().length > 0) {
+                    CH.push({
+                        Ma_CauHoi: classch[k].id,
+                        NoiDung: $(this).val().trim(),
+                        HinhAnh: "",
+                        MucDo: 1,
+                        Dap_An: [],
+                    });
+                    var da = $('.txtdan');
+                    var n = 0;
+
+
+                    while (n < 4) {
+                        var anhdapan = "";
+
+                        dem++;
+                        n++;
+                        var img = $('.txtlinkHinh');
+                        $.each(img, function (a, b) {
+
+                            if (b.id == da[dem].id) {
+                                anhdapan = $(this).val();
+
+                            }
+                        })
+                        CH[k].Dap_An.push({
+                            MA_DAN: da[dem].id,
+                            NoiDung: $(da[dem]).val().trim(),
+                            HinhAnh: anhdapan,
+                        });
+
+                    }
+                    var img = $('.txtlinkHinh');
+                    $.each(img, function (a, b) {
+
+                        if (b.id == v.id) {
+
+                            CH[k].HinhAnh = $(this).val();
+                        }
+                    })
+
+                }
+
+            })
+            console.log(CH)
+            var machuong = $('#txtMa').val();
+         
+            if (CH.length > 0) {
+                $.ajax({
+                    type: 'POST',
+                    data: 'json',
+                    url: '/Admin/CauHoi/UpdateCauHoi',
+                    data: { listCH: JSON.stringify(CH) },
+                    success: function (data) {
+                        window.location = "/Admin/CauHoi/Index/" + machuong;
+                    }
+                });
+            }
+
+
+        });
+    </script>
+
+}
+<input id="txtMa" hidden value="@Model.ToList()[0].Ma_Chuong">
+<div id="frmCauhoi">
+    @{
+        try
+        {
+
+            foreach (var item in Model)
+
+            {
+               
+                <div class="container card-body frmCH" id="@item.Ma_CauHoi">
+                    <div class="card card-body">
+
+
+                        <div class="container">
+
+                            <div class="row">
+                                <div class="form-outline card-body col-10">
+                                    <label class="form-label" for="textAreaExample3">Nhập nội dung câu hỏi </label>
+                                    @if (item.MucDo.Equals("Nhận Biết"))
+                                    {
+                                        <textarea class="form-control col-12 txtCH" id="@item.Ma_CauHoi" rows="2"> $c$1  @item.NoiDung</textarea>
+                                    }
+                                    @if (item.MucDo.Equals("Thông Hiểu"))
+                                    {
+                                        <textarea class="form-control col-12 txtCH" id="@item.Ma_CauHoi" rows="2"> $c$2  @item.NoiDung</textarea>
+                                    }
+                                    @if (item.MucDo.Equals("Vận Dụng"))
+                                    {
+                                        <textarea class="form-control col-12 txtCH" id="@item.Ma_CauHoi" rows="2"> $c$3  @item.NoiDung</textarea>
+                                    }
+                                    @if (item.MucDo.Equals("Vận Dụng Cao"))
+                                    {
+                                        <textarea class="form-control col-12 txtCH" id="@item.Ma_CauHoi" rows="2"> $c$4  @item.NoiDung</textarea>
+                                    }
+
+                                </div>
+                                <div class="text-center" style="margin-top:5%">   <button class="file-upload-btn btn-primary btn-sm btn" type="button" onclick="$('.@item.Ma_CauHoi').trigger( 'click' )">Add Image</button> </div>
+                            </div>
+                            <input class="@item.Ma_CauHoi" id="@item.Ma_CauHoi" hidden type='file' onchange="readURL(this);" accept="image/*" />
+                            <div class=" row file-upload-content" name=btnanh id="@item.Ma_CauHoi" style="margin-top:-2%">
+                                @{
+                                    if (item.HinhAnh.Length > 0)
+                                    {
+                                        <input class="txtlinkHinh" id="@item.Ma_CauHoi" value="@item.HinhAnh" hidden />
+                                        <div class="col-auto">
+                                            <img class="file-upload-image" id="@item.Ma_CauHoi" width="200px" src="@item.HinhAnh" alt="your image" />
+                                        </div>
+                                        <i class="col-auto bi bi-x-circle-fill remove-image " id="@item.Ma_CauHoi" style="margin-left:-4% ;margin-top:-1%; font-size: 2rem; color: #ff0000" onclick="removeUpload(this)"></i>
+                                    }
+                                }
+
+                            </div>
+                        </div>
+                        @foreach (var item1 in item.Dap_AN)
+                        {
+
+                            <div class="container card-body">
+                                <div class="row">
+                                    <div class="form-outline card-body col-7">
+                                        <label class="form-label" for="textAreaExample3">Nội dung đáp án    </label>
+                                        @{
+                                            if (item1.TrangThai == true)
+                                            {
+                                                <textarea class="form-control col-12 txtdan" id="@item1.MA_DAN" rows="1">$*$ @item1.NoiDung</textarea>
+                                            }
+                                            else
+                                            {
+                                                <textarea class="form-control col-12 txtdan" id="@item1.MA_DAN" rows="1"> @item1.NoiDung</textarea>
+                                            }
+                                        }
+
+                                    </div>
+                                    <div class="text-center" style="margin-top:3%">   <button class="file-upload-btn btn-sm btn-primary btn" type="button" onclick="$('.@item1.MA_DAN').trigger('click')">Add Image</button> </div>
+                                </div>
+
+                                <input class="@item1.MA_DAN" id="@item1.MA_DAN" hidden type='file' onchange="readURL(this);" accept="image/*" />
+                                <div class=" row file-upload-content" id="@item1.MA_DAN" name=btnanh style="margin-top:-2%">
+                                    @{
+                                        if (item1.HinhAnh.Length > 0)
+                                        {<input class="txtlinkHinh" hidden value="@item1.HinhAnh" id="@item1.MA_DAN" />
+                                            <div class="col-auto ">
+                                                <img class="file-upload-image " id="@item1.MA_DAN" src="@item1.HinhAnh" alt="your image" />
+                                            </div>
+                                            <i class="col-auto bi bi-x-circle-fill remove-image " onclick="removeUpload(this)" id="@item1.MA_DAN" style="margin-left:-4.2% ;margin-top:5px; font-size: 2rem; color: #ff0000"></i>
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                        }
+
+                        <div class=" card-body container col-10">
+                            <div class=" row">
+
+                                <button class="btnthem  btn btn-primary btn-round ml-0" id="Them"> Lưu </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div> }
+
+        }
+        catch { }
+
+    }
+</div>
+
+
+

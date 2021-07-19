@@ -1,0 +1,31 @@
+﻿
+<nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" data-navbar-on-scroll="data-navbar-on-scroll" style="background-image: none; background-color: rgba(255, 255, 255, 0); transition: none 0s ease 0s;font-family:sans-serif; font-size:20px; border-bottom:solid 2px; border-bottom-color:rgb(16,95,197)">
+
+    <div class="container-xxl">
+        @*<a class="navbar-brand" href="#"><img class="img-fluid" src="assets/img/icons/logo.png" alt=""></a>*@
+        <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto ms-lg-4 ms-xl-7 border-bottom border-lg-bottom-0 pt-2 pt-lg-0">
+                <li class="nav-item"><a class="nav-link fw-bold active" aria-current="page" href="/LopHocPhan">LỚP HỌC PHẦN</a></li>
+                <li class="nav-item"><a class="nav-link fw-medium" href="/PhongThi">PHÒNG THI</a></li>
+            </ul>
+            <form class="d-flex py-3 py-lg-0">
+                <ul class="navbar-nav me-auto ms-lg-4 ms-xl-7 border-bottom border-lg-bottom-0 pt-2 pt-lg-0">
+
+                    @*<li class="nav-item"><a class="nav-link fw-medium " href="#">PHẠM HUỲNH HẢI YẾN</a></li>*@
+                    <div class="dropdown show">
+                        <a class="btn-white dropdown-toggle text-uppercase text-black" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-family:Arial; font-weight:500; text-decoration:none">
+                            @ViewBag.HoTen
+                        </a>
+
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="#">Đổi mật khẩu</a>
+                            <a class="dropdown-item" href="/Login/Login">Đăng xuất</a>
+                        </div>
+                    </div>
+                </ul>
+            </form>
+        </div>
+    </div>
+
+</nav>

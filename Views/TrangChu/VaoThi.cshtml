@@ -1,0 +1,488 @@
+﻿
+@{
+    Layout = null;
+    TracNghiemOnline.Modell.De_Thi Dethi = (TracNghiemOnline.Modell.De_Thi)ViewBag.DeThi;
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Trắc Nghiệm Online</title>
+    <link href="~/Content/css/styles.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <style>
+
+        #CauHoi {
+            position: fixed;
+            top: 10%;
+            left: 83.5%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 99;
+        }
+        #dialog {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            z-index: 100000;
+            overflow: hidden;
+            text-align: center;
+            background-color: rgb(68 65 65 / 0.55);
+        }
+        #frmch {
+            width: 80%;
+        }
+    </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
+
+</head>
+<body class="sb-nav-fixed ">
+    <div id="layoutSidenav">
+        <div id="layoutSidenav ">
+            <div id="thongbao">
+
+            </div>
+            <div class="container-fluid">
+                <main>
+
+                    <div id="layoutSidenav_content" style="margin-top:-4%">
+
+                        <div id="DongHo">
+                            <div class="col-md-2 card" style="margin-top:3%">
+                                <input id="TxtThoiGian" hidden="hidden" value="@ViewBag.GioThi" />
+                                <input id="TxtMaDe" hidden="hidden" value="@Dethi.MaDeThi" />
+                                <div class="card-title">
+                                    <h5 class="card-header py-2 text-center">Thông Tin Sinh Viên </h5>
+                                </div>
+                                <div class="status card-body  small bottom-50">
+                                    MaSV :   @Dethi.SinhVien.MaSV
+                                </div>
+                                <div class="status card-body  small">
+                                    Tên : @Dethi.SinhVien.Ten
+                                </div>
+                                <div class="status card-body small">
+                                    Ngày Sinh : @Dethi.SinhVien.NgaySinh
+                                </div>
+                                <div class="status card-body  small">
+                                    Lớp :   @Dethi.SinhVien.Lop.TenLop
+                                </div>
+                                <div class="status card-body  small">
+                                    Môn Thi : @Dethi.Bo_De.MonHoc.TenMon
+                                </div>
+
+                                <div class="status card-body  small">
+                                    <span id="demo">Đồng Hồ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-header text-center col-md-12 card py-3">
+                            <span>Đề Thi Trắc Nghiệm</span>
+                        </div>
+
+                        <div class="card col-auto">
+
+                            @{
+                                int dem = 0;
+                                foreach (var item in Dethi.CauHoiDeThis)
+                                {
+
+
+                                    dem++;
+                                    <h5 class=" card-body chon" style="width:920px" id="@item.Kho_CauHoi.Ma_CauHoi">Câu @dem )@item.Kho_CauHoi.NoiDung </h5>
+                                    try
+                                    {
+                                        if (item.Kho_CauHoi.HinhAnh.Length > 0)
+                                        {
+                                            <div class="row" style="margin-top:0px;margin-left:10%">
+                                                <img src="@item.Kho_CauHoi.HinhAnh" width="200">
+                                            </div>}
+                                    }
+                                    catch { }
+
+
+                                    foreach (var item1 in item.Kho_CauHoi.Dap_AN)
+                                    {
+                                        if (item1.TrangThai == false)
+                                        {
+                                            <div class="row" style="margin-top:0px;margin-left:3%" ;>
+                                                <label class="form-check-label" for="@item1.MA_DAN">
+                                                    <input class="form-check-input txtch" onclick="changeText(this)" type="radio" value="@item.Kho_CauHoi.Ma_CauHoi" name="@item.Kho_CauHoi.Ma_CauHoi" id="@item1.MA_DAN">
+                                                    @item1.NoiDung
+                                                </label>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="row" style="margin-top:0px;margin-left:3%" ;>
+                                                <label class="form-check-label" id="@item1.MA_DAN" for="@item1.MA_DAN">
+                                                    <input class="form-check-input txtch" type="radio" onclick="changeText(this.id)" value="@item.Kho_CauHoi.Ma_CauHoi" checked name="@item.Kho_CauHoi.Ma_CauHoi" id="@item1.MA_DAN">
+                                                    @item1.NoiDung
+                                                </label>
+                                            </div>
+
+                                        }
+                                        try
+                                        {
+
+                                            if (item1.HinhAnh.Length > 0)
+                                            {
+                                                <div class="row" style="margin-left:6%" ;>
+                                                    <img src="@item1.HinhAnh" width="150">
+                                                </div>}
+                                        }
+                                        catch { }
+
+
+                                    }
+
+
+                                }
+                            }
+
+
+                            @*<div class="card col-12">
+                                    @{
+                                        int i = 0;
+                                        foreach (var item in Dethi.CauHoiDeThis)
+                                        {
+
+                                            <div class="form-group">
+                                                <h5 style="width:710px;"> Câu @(i=i+1) : @item.Kho_CauHoi.NoiDung </h5>
+
+                                                @{
+                                                    try
+                                                    {
+                                                        if (item.Kho_CauHoi.HinhAnh.Length > 0)
+                                                        {
+                                                            <div class="card-body ">
+                                                                <img class="img-circle center-block" style="margin-left:140px" src="@item.Kho_CauHoi.HinhAnh"
+                                                                     alt="anh viet nam anh 1 " width="400px" height="400px" />
+                                                            </div>
+
+                                                        }
+
+                                                    }
+                                                    catch { }
+
+                                                }
+
+                                            </div>
+                                            foreach (var item1 in item.Kho_CauHoi.Dap_AN)
+                                            {
+                                                <div class="form-group">
+                                                    @try
+                                                    {
+                                                        if (item1.HinhAnh.Length > 0)
+                                                        {
+                                                            <img class="img-circle center-block" style="margin-left:80px" src="@item1.HinhAnh"
+                                                                 alt="anh viet nam anh 1" width="150px" />
+
+                                                        }
+                                                    }
+                                                    catch { }
+
+                                                    <div class="custom-control custom-radio">
+                                                        @{
+                                                            if (item1.TrangThai == true)
+                                                            {
+                                                                <input class="custom-control-inline form-check" id="@item1.MA_DAN" name="@item1.Ma_CauHoi" checked="checked" type="radio" onclick="changeText(this.id)" />
+                                                                <label class="custom-control-inline" style="width:700px" for="@item1.MA_DAN">
+                                                                    @item1.NoiDung
+                                                                </label>
+                                                            }
+                                                            else
+                                                            {
+                                                                <input class="custom-control-inline form-check" id="@item1.MA_DAN" name="@item1.Ma_CauHoi" type="radio" onclick="changeText(this.id)" />
+                                                                <label class="custom-control-inline" style="width:700px" for="@item1.MA_DAN">
+                                                                    @item1.NoiDung
+                                                                </label>
+                                                            }
+
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                            }
+
+
+
+                                        }
+                                    }
+                                    <div class="card-body ">
+                                        <input id="bntNopBai" class=" btn btn-success " type="submit" value="Nộp Bài" />
+                                    </div>
+                                </div>*@
+                            <div id="CauHoi" class="col-2">
+                                <div class="card">
+                                    <div class="card-info">
+                                        <h5 class="card-header py-2 text-center">Danh sách câu hỏi  </h5>
+                                    </div>
+                                    <div class="card-body">
+
+                                        <div class="stats">
+                                            @{
+                                                int cout = 1;
+                                                foreach (var item in Dethi.CauHoiDeThis)
+                                                {
+                                                    if (item.Kho_CauHoi.Dap_AN.ToList().Exists(x => x.TrangThai == true))
+                                                    {
+                                                        <a name="chon" href="#@item.Kho_CauHoi.Ma_CauHoi" id="@item.Kho_CauHoi.Ma_CauHoi" class="btn btn-success btnchon" style=" margin-bottom:3px; border-radius:30% ;padding:2px;width:30px;height:30px"> @cout</a>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <a name="chon" href="#@item.Kho_CauHoi.Ma_CauHoi" id="@item.Kho_CauHoi.Ma_CauHoi" class="btn btn-outline-secondary btnchon" style=" margin-bottom:3px; border-radius:30% ;padding:2px;width:30px;height:30px"> @cout</a>
+                                                    }
+
+                                                    cout++;
+                                                }
+                                            }
+
+                                        </div>
+
+
+                                    </div>
+                                    <div class=" card-body text-center">
+                                        <button class="btn btn-success btn-success" id="bntNopBai"> Nộp Bài</button>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </main>
+
+
+
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+ 
+    <script>
+        var madethi = $('#TxtMaDe').val();
+        var listch = [];
+        function changeText(button) {
+            var mach = $(button).val();
+
+            var buton = $('.btnchon');
+            var checkbox = $('.txtch');
+            for (var i = 0; i < checkbox.length; i++) {
+                if (checkbox[i].checked == true) {
+                    listch.push({
+                        Ma_Dan: checkbox[i].id,
+                        Ma_De: 1,
+                    });
+                }
+
+            }
+            $.each(buton, function (k, v) {
+
+                if (v.id == mach) {
+                    $(v).removeClass('btn-outline-secondary');
+                    $(v).addClass('btn-success');
+
+                }
+            })
+
+            $.ajax({
+                type: 'GET',
+                url: '/TrangChu/LuaChon/' + button.id,
+                data: { madethi },
+                success: function (KetQua) {
+                }
+            });
+
+        };
+
+
+        $(document).ready(function () {
+            $.ajax({
+                type: 'POST',
+                url: '/TrangChu/KiemTraDe',
+                data: { madethi },
+                success: function (KetQua) {
+                    if (KetQua.status == false) {
+
+                        window.location = "/PhongThi";
+
+                        clearInterval(x);
+
+
+                    }
+
+                }
+            });
+
+            $(document).on('click', "button[name ='chon']", function () {
+                var ma = this.id;
+                var roll = $('.chon');
+                for (var i = 0; i < roll.length; i++) {
+                    if (roll[i].id == ma) {
+                        roll[i].click();
+
+                    }
+                }
+
+            });
+            $('#bntNopBai').click(function () {
+                var buton = $('.btnchon');
+
+                listch = [];
+                var checkbox = $('.txtch');
+                for (var i = 0; i < checkbox.length; i++) {
+                    if (checkbox[i].checked == true) {
+                        listch.push({
+                            Ma_Dan: checkbox[i].id,
+                            Ma_De: 1,
+                        });
+                    }
+                }
+                if (listch.length == buton.length) {
+                    window.location = "/Diemthi/" + madethi;
+                }
+                else {
+                    alert("vui lòng làm hết câu hỏi");
+                }
+
+
+
+            });
+
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState == "hidden") {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/TrangChu/HuyDe',
+                        //  data: { listCH: JSON.stringify(listch) },
+                        data: { madethi },
+                        success: function (data) {
+
+                            var let = `<div id="dialog">
+
+                <div class="col-lg-5 col-md-10 col-sm-10 container text-center" style="margin-top:10%">
+                    <div class="card card-stats">
+                        <div class="card-header card-header-warning">
+                            <h4 class="card-title text-center">Thông báo</h4>
+                        </div>
+                        <div class="card-header">
+                            <div class="stats">
+
+                                <h3 class="card-text">Bạn đã vi phạm quy chế thi</h3>
+                            </div>
+                         </div>
+                        <div class=" card-header-text text-center">
+                            <a class="btn btn-info" href="/PhongThi">Thoát</a>
+                        </div>
+                    </div>
+                </div>
+            </div>`
+
+                            clearInterval(x);
+                            $('#thongbao').empty();
+                            $('#thongbao').append(let);
+
+                            $('#thongbao').show();
+                        }
+                    });
+
+
+                }
+            });
+
+            // Thiết lập thời gian đích mà ta sẽ đếm
+            var tg = $('#TxtThoiGian').val();
+            var countDownDate = new Date(tg).getTime();
+            // cập nhập thời gian sau mỗi 1 giây
+
+            var x = setInterval(function () {
+                // Lấy thời gian hiện tại
+                $.ajax({
+                    type: 'POST',
+                    url: '/TrangChu/KiemTraDe',
+                    data: { madethi },
+                    success: function (KetQua) {
+                        if (KetQua.status == false) {
+
+                            var let = `<div id="dialog">
+
+                <div class="col-lg-5 col-md-10 col-sm-10 container text-center" style="margin-top:10%">
+                    <div class="card card-stats">
+                        <div class="card-header card-header-warning">
+                            <h4 class="card-title text-center">Thông báo</h4>
+                        </div>
+                        <div class="card-header">
+                            <div class="stats">
+
+                                <h3 class="card-text">Bạn đã vi phạm quy chế thi</h3>
+                            </div>
+                         </div>
+                        <div class=" card-header-text text-center">
+                            <a class="btn btn-info" href="/PhongThi">Thoát</a>
+                        </div>
+                    </div>
+                </div>
+            </div>`
+
+                            clearInterval(x);
+                            $('#thongbao').empty();
+
+                            $('#thongbao').append(let);
+
+                            $('#thongbao').show();
+
+                        }
+
+                    }
+                });
+
+                var now = new Date().getTime();
+
+                // Lấy số thời gian chênh lệch
+                var distance = countDownDate - now;
+
+                // Tính toán số ngày, giờ, phút, giây từ thời gian chênh lệch
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // HIển thị chuỗi thời gian trong thẻ p
+                if (hours > 0) {
+                    document.getElementById("demo").innerHTML = "Thời Gian Còn Lại  " + hours + " : "
+                        + minutes + " : " + seconds + " Phút ";
+                }
+                else {
+                    document.getElementById("demo").innerHTML = "Thời Gian Còn Lại  "
+                        + minutes + " : " + seconds + " Phút ";
+                }
+                // Nếu thời gian kết thúc, hiển thị chuỗi thông báo
+                if (distance < 0) {
+                    alert("Đã Hết Giờ Làm Bài")
+                    window.location = "/Diemthi/" + madethi;
+                    clearInterval(x);
+                }
+            }, 1000);
+
+        });
+    </script>
+
+
+
+</body>
+</html>
+
+
+

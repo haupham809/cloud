@@ -1,0 +1,97 @@
+﻿@model List<TracNghiemOnline.Modell.Kho_CauHoi>
+@{
+    ViewBag.Title = "LoadDeThi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+
+}
+
+
+
+<div class="card">
+
+    <div class="card mb-4">
+        @{
+            int i = 0;
+            foreach (var item in Model)
+            {
+
+
+
+                <div class="card-body">
+                    <form>
+                        <div class="form-group">
+                            <h5 style="width:710px;"> Câu @(i = i + 1) :  @item.NoiDung </h5>
+
+                            @if (item.HinhAnh.Length > 0)
+                            {
+                                <div class="card-body row">
+                                    <img class=" center-block" style="margin-left:140px" src="@item.HinhAnh.Trim()"
+                                         alt="anh viet nam anh 1 " width="250x" height="150px" />
+                                </div>
+
+                            }
+
+                        </div>
+                        @foreach (var item1 in item.Dap_AN)
+                        {
+                            <div class="form-group">
+
+
+
+                                <div class="custom-control custom-radio row">
+
+
+                                    @if (item1.TrangThai == true)
+                                    {
+                                        <label class="custom-control-inline text-danger" style="width:700px" ; for="@item1.MA_DAN">
+                                            @item1.NoiDung
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <label class="custom-control-inline" style="width:700px" for="@item1.MA_DAN">
+                                            @item1.NoiDung
+                                        </label>
+                                    }
+
+                                </div>
+                                @{ try
+                                    {
+                                        if (item1.HinhAnh.Length > 0)
+                                        {
+                                            <img class=" center-block row" style="margin-left:80px" src="@item1.HinhAnh"
+                                                 alt="anh viet nam anh 1 " width="150px" />
+
+                                        }
+                                    }
+                                    catch { }
+                                }
+                            </div>
+                        }
+                        <label class="text-danger">  Mức đô: nhân biết   </label>
+
+                </div>
+
+            }           
+
+            <div class="card-body">
+                <a id="txtTroVe" class="btn btn-primary btn-round" href="/Admin/BoMon/DSDethi"> Quay Lại </a>
+                <a id="txtTroVe" class="btn  btn-round btn-danger" href="@ViewBag.linkpdf" download=""> Xuất PDF </a>
+
+            </div>
+
+
+
+
+
+
+        }
+    </div>
+
+
+</div>
+
+
+
+
+

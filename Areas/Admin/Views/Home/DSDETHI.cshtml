@@ -1,0 +1,275 @@
+﻿@model List<TracNghiemOnline.Modell.Bo_De>
+@{
+    ViewBag.Title = "DSDETHI";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var Bode
+            $(document).on('click', 'button[name=btnSua]', function () {
+
+                Bode = $(this).closest('tr');
+                let ma = $(this).closest('tr').find("td:eq(0)").text().trim();
+                let ten = $(this).closest('tr').find("td:eq(1)").text();
+
+                let tg = $(this).closest('tr').find("td:eq(4)").text();
+                $('#MaDe').val(ma.trim());
+                $('#NoiDung').val(ten.trim());
+                $('#txtTG').val(tg.trim());
+                $('#modalSinhVien').modal();
+
+
+            })
+            $(document).on('click', 'button[name=btnTrangThai]', function () {
+             
+                $.ajax({
+                    url: "/Admin/Home/GuiboMon/" + $(this).closest('tr').find("td:eq(0)").text().trim(),
+                    type: 'Get',
+                    success: function (res) {
+                        document.location = "/Admin/Home/BoMon"
+                    }
+
+
+                });
+
+            });
+            $(document).on('click', 'button[name=Delete]', function () {
+
+                Bode = $(this).closest('tr');
+                let ma = $(this).closest('tr').find("td:eq(0)").text().trim();
+                let ten = $(this).closest('tr').find("td:eq(1)").text();
+
+                let tg = $(this).closest('tr').find("td:eq(4)").text();
+                $('#MaDe').val(ma.trim());
+                $('#NoiDung').val(ten.trim());
+                $('#txtTG').val(tg.trim());
+
+                $('#modalConfirm').modal();
+
+            });
+            $('#btnYes').click(function () {
+
+                let made = $('#MaDe').val();;
+                let nd = $('#NoiDung').val();
+                let tg = $('#txtTG').val();
+
+                $('#modalSinhVien').modal('hide');
+                $.ajax({
+                    url: '/Admin/Home/UpdateDethi', type: 'post',
+                    data: {
+                        made: made,
+                        nd: nd,
+                        tg: tg,
+                        xoa: false,
+                    },
+                    success: function (data) {
+                        Loaddata(data);
+                    }
+                });
+
+            });
+            $('#btnSubmit').click(function () {
+                let made = $('#MaDe').val();;
+                let nd = $('#NoiDung').val();
+                let tg = $('#txtTG').val();
+
+                if (made.length == 0 || nd.length == 0 || tg.length == 0) {
+                    alert("Vui lòng nhập đầy đủ thông tin");
+                    return;
+                }
+                else {
+                    $('#modalSinhVien').modal('hide');
+                    $.ajax({
+                        url: '/Admin/Home/UpdateDethi', type: 'post',
+                        data: {
+                            made: made,
+                            nd: nd,
+                            tg: tg,
+                            xoa: true,
+                        },
+                        success: function (data) {
+
+                            Loaddata(data);
+                        }
+                    });
+                }
+
+
+            });
+            function Loaddata(data) {
+
+                $('#bodeid').empty();
+                $('#modalSinhVien').hide();
+                $('#modalConfirm').modal('hide');
+                $.each(data.Bode, function (k, v) {
+                    let = '<tr>'
+
+                    let += '<td>' + v.MaDe + '</td>';
+                    let += '<td>' + v.Ten + '</td>';
+                    let += '<td>' + v.TenMon + '</td>';
+                    let += '<td>' + v.SoCau + '</td>';
+                    let += '<td>' + v.ThoiGian + '</td>';
+
+                    let += '<td>' + v.Giaovien + '</td>';
+                   
+                
+
+                 let += '<td><a href="/Admin/Home/LoadDeThi/' + v.MaDe + '?tenmon='+v.TenMon+'" class="btn btn-xs btn-primary"><span><i class="far fa-eye"></i></span></a>';
+                    let += '<button name="btnSua" class="btn btn-xs btn-success"><i class="far fa-edit" aria-hidden="true" style="color:white"></i></button>';
+                    let += '<button  name="btnTrangThai" class="btn badge-success "> Gửi Bộ Môn </button>'
+                    let += '<button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true"></i></button></td>';
+
+
+
+                    let += '</tr>'
+                    $('#bodeid').append(let);
+
+                });
+
+
+
+            }
+
+        })
+
+
+    </script>
+}
+
+<div class="modal" tabindex="-1" role="dialog" id="modalConfirm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-dark">
+                <h5 class="modal-title">CẢNH BÁO</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="ma" value="" />
+                Bạn có chắc chắn muốn xóa?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnYes">Xác nhận</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH ĐỀ THI</h4>
+                <a href="/Admin/Home/TaoDeThi" class="btn btn-primary btn-round ml-auto" style="float:right">
+                    <i class="fa fa-plus"></i>
+                    <span>Thêm đề thi</span>
+                </a>
+
+            </div>
+            <div style="width:auto; height:3px; background-color:rgb(248,249,250);"></div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+
+                        <div class="col-sm-12">
+                            <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+
+                                <thead>
+                                    <tr>
+                                        <th>Mã Đề </th>
+                                        <th>Nội Dung </th>
+                                        <th>Tên Môn Học</th>
+                                        <th>Số Câu</th>
+                                        <th>Thời Gian Thi</th>
+                                        <th>Người Tạo</th>
+
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                               
+                                <tbody id="bodeid">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td> @item.Ma_BoDe </td>
+                                            <td>  @item.NoiDung </td>
+                                            <td> @item.MonHoc.TenMon</td>
+                                            <td> @item.SoCau</td>
+                                            <td id="sad"> @item.ThoiGianThi</td>
+                                            <td>  @item.GiaoVien.TenGV </td>
+
+
+
+
+
+                                            <td>
+
+                                                <a href="/Admin/Home/LoadDeThi/@item.Ma_BoDe?tenmon=@item.MonHoc.TenMon" class="btn btn-xs btn-primary">
+                                                    <span><i class="far fa-eye"></i></span>
+                                                </a>
+
+                                                <button name="btnSua" class="btn btn-xs btn-success"><i class="far fa-edit" aria-hidden="true" style="color:white"></i></button>
+                                                <button name="btnTrangThai" class="btn btn-xs badge-success "> Gửi Bộ Môn </button>
+                                                <button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true"></i></button>
+                                            </td>
+
+                                        </tr>
+
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        </div>
+
+
+
+    <div class="modal" tabindex="-1" role="dialog" id="modalSinhVien">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-dark" style="color:white">
+                    <h5 class="modal-title">THÔNG TIN ĐỀ THI</h5>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <div class="form-group">
+                            <label>Mã Đề</label>
+                            <input type="text" class="form-control" id="MaDe">
+                            <label>Nôi Dung</label>
+                            <input type="text" class="form-control" id="NoiDung">
+                            <div class="form-group">
+                                <label>Thời Gian</label>
+                                <select class=" form-control col-12" id="txtTG">
+                                    <option value=""> ==========Thời Gian ============= </option>
+                                    @for (int i = 10; i <= 180; i += 10)
+                                    {
+                                        <option value="@i"> @i  Phút </option>
+
+                                    }
+                                </select>
+
+                            </div>
+
+
+
+                        </div>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="btnSubmit">Xác nhận</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnDong">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,153 @@
+﻿@model List<TracNghiemOnline.Modell.SinhVien>
+@{
+    ViewBag.Title = "ThemSinhVien";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    var Maphong = (string)ViewBag.MaPhong;
+}
+@section Jsfooter{
+    
+    <script>
+        $(document).ready(function () {
+            var dem = 0;
+   
+            $('#txtChon').click(function () {
+                var checked = $('.txtCheckBox');
+
+                if ($(this).prop("checked") == true) {
+                
+                    $.each(checked, function (i,item) {
+
+                        $(item).prop("checked", true);
+
+                    });
+
+
+                }
+                else {
+                    $.each(checked, function (i, item) {
+
+                        $(item).prop("checked", false);
+
+                    });
+                }
+            });
+            var maphong = document.getElementById('txtChon').value;
+            $('#btnTao').click(function () {
+
+             
+              
+                var Checked = document.getElementsByClassName('txtCheckBox');
+                var DS = [];
+                for (var i = 0; i < Checked.length; i++) {
+                 
+                    if (Checked[i].checked == true) {     
+                        DS.push({
+                       
+                                Ma_LOP: maphong,
+                                Ma_SV: Checked[i].id      
+                        });
+
+                        
+
+                    }
+                }
+                if (DS.length > 0) {
+                    $.ajax({
+                        type: 'POST',
+                        data: { DSlop: JSON.stringify(DS) },
+                        url: '/Admin/QuanLyThi/LuuSinhVien',
+                        success: function (res) {
+                            window.location = '/Admin/QuanLyThi/DSSinhVen/' + maphong;
+
+                        }
+
+
+
+
+                    });
+                }
+                else {
+                    alert("Vui Lòng Chọn Sinh Viên");
+                }        
+
+            });
+
+
+
+        });
+    </script>
+    
+    
+    }
+
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH SINH VIÊN</h4>
+
+
+
+                <button class="btn btn-primary btn-round ml-auto" id="btnTao" data-target="#addRowModal">
+                    <i class="fa fa-plus"></i>
+                    Thêm sinh viên
+                </button>
+                <div class="col-md-1" style="text-align:center">
+
+                    <a class="btn btn-primary btn-round ml-auto" href="/Admin/QuanLyThi/DSSinhVen/@ViewBag.MaPhong" data-target="#addRowModal">
+                        <i class="bi bi-arrow-left-square"></i>
+                        Quay lại
+                    </a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+
+                    <div class="col-sm-12">
+                        <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                            <thead>
+                                <tr role="row">
+                                    <th class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Mã sinh viên</th>
+                                    <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Tên sinh viên</th>
+                                    <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Ngày sinh</th>                
+                                    <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Lớp</th>
+                                    <th style="width: 15%;" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending">  <input type="checkbox" value="@ViewBag.MaPhong" id="txtChon" /> Chọn Tất</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                <tr>
+                                    <td> @item.MaSV </td>
+
+                                    <td> @item.Ten</td>
+                                    <td>  @item.NgaySinh </td>
+                                    <td>  @item.Lop.TenLop </td>
+                                    <td style="text-align:center">
+                                        <div class="col-1">
+
+                                            <div> <input type="checkbox" id="@item.MaSV" data-id="@ViewBag.MaPhong" value="@item.MaSV" class="txtCheckBox" /></div>
+
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+        </div>
+

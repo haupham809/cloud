@@ -1,0 +1,453 @@
+﻿@model List<TracNghiemOnline.Modell.LopHocPhan>
+@{
+    ViewBag.Title = "LopHocPhan";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    bool quyen = (bool)ViewBag.Quyen;
+
+}
+
+@section scripts {
+    <script>
+
+        $(document).ready(function () {
+
+            var maki;
+            var mamon;
+            var magv;
+            var malop;
+            //load du lieu
+            LoadData();
+            $(document).on('click', "button[name = 'Delete']", function () {
+                let ma = $(this).closest('tr').attr('id');
+                $('#ma').val(ma);
+                $('#modalConfirm').modal();
+
+            });
+            $(document).on('click', "button[name = 'Update']", function () {
+
+              //  malop = $(this).closest('tr').attr('id');
+                let ten = $(this).closest('tr').find("td:eq(1)").text();
+                 mamon = $(this).closest('tr').find("td:eq(2)").attr('id');
+               malop = $(this).closest('tr').attr('id');
+                magv = $(this).closest('tr').find("td:eq(3)").attr('id')
+                maki = $(this).closest('tr').find("td:eq(4)").attr('id')
+                $('#ma').val(ma);
+                $('#txtKi').val(ten);
+
+                $('#lop').val(mamon);
+                showGV();
+               
+                $('#KiThi').val(maki);
+                $('#LopHP').hide();
+                $('#modalLop').modal();
+            });
+
+            $('#btnYes').click(function () {
+                let ma = $('#ma').val();
+                $.ajax({
+                    url: '/Admin/QuanLyThi/DeleteKiThi', type: 'post',
+                    data: {
+                        maki: ma,
+                    },
+                    success: function (data) {
+                        $('#modalConfirm').modal('hide');
+                        alert(data.msg);
+                        LoadData();
+
+
+                    }
+                });
+
+            });
+            //show form
+            $('#btnAdd').click(function () {
+                $('#LopHP').show();
+                $.ajax({
+                    type: 'post',
+                    url: '/Admin/QuanLyThi/CreateClassRoom',
+                    success: function (data) {
+                        var Let = '<option value="">Chọn Môn Hoc</option>';
+                        $('#lop').empty();
+                        $('#lop').append(Let);
+                        $.each(data.monhoc, function (k, v) {
+                            Let = '<option value="' + v.Ma_Mon + '" onclick="ChonGV(id)">' + v.TenMon + '</option>';
+                            $('#lop').append(Let);
+                        });
+
+                        Let = '<option value="">Chọn Kỳ Học</option>';
+                        $('#KiThi').empty();
+                        $('#KiThi').append(Let);
+                        $.each(data.kithi, function (k, v) {
+                            Let = '<option value="' + v.MAKI + '">' + v.TenKi + '</option>';
+                            $('#KiThi').append(Let);
+                        });
+
+                        $('#modalLopHP').modal();
+                    }
+                })
+                $("#txtKi").val('');
+                $('#ma').val('');
+                $('#thongbao').empty();
+                $('#modalLop').modal();
+
+            })
+
+            $(document).on('click', 'button[name=btnTrangThai]', function () {
+
+                var trangthai = $(this).closest('tr').find("td:eq(2)").attr('id');
+                let ten = $(this).closest('tr').find("td:eq(1)").text();
+                let ma = $(this).closest('tr').attr('id');
+                $('#ma').val(ma);
+                $('#txtKi').val(ten);
+
+                $.ajax({
+                    url: '/Admin/QuanLyThi/Update',
+                    data: { maki: ma, nd: ten, trangthai: trangthai },
+                    type: 'Get',
+                    success: function (res) {
+                        $("#txtKi").val('');
+                        LoadData();
+                        $('#ma').val('');
+                    }
+
+                });
+
+
+            });
+
+
+            //Add or Updtae
+            $('#btnSubmit').click(function () {
+                var Lop = document.getElementById('txtKi').value;
+
+                var ma = $('#ma').val();
+                if (ma.length == 0) {
+                    var MaMon = document.getElementById('lop').value;
+                    var kihoc = document.getElementById('KiThi').value
+                    var GV = document.getElementById('GV').value
+
+                    if (Lop.length <= 0) {
+
+                        alert("Bạn chưa nhập tên lớp   ");
+
+                    }
+                    if (MaMon.length <= 0) {
+                        alert("Bạn chưa Chọn Môn Học");
+                    }
+
+                    if (kihoc.length <= 0) {
+                        alert("Bạn chưa Chọn Kỳ Học");
+                    }
+                    if (GV.length <= 0) {
+                        alert("Bạn vui lòng chọn giảng viên dạy");
+                    }
+                  
+
+                    if (Lop.length > 0 & MaMon.length > 0 & kihoc.length > 0 & GV.length > 0) {
+                        var ma = $('#ma').val();
+
+                        $.ajax({
+                            type: 'GET',
+                            url: 'CreateLopHoc',
+                            data: { malop: Lop, mamon: MaMon, maki: kihoc, GV: GV },
+                            success: function (res) {
+                                LoadData();
+                            }
+
+                        });
+                    }
+                    $('#modalLop').modal('hide');
+                }
+//                else {
+//                    var MaMon = document.getElementById('lop').value;
+//                    var kihoc = document.getElementById('KiThi').value;
+
+//                    if (Lop.length <= 0) {
+
+//                        alert("Bạn chưa nhập tên lớp   ");
+
+//                    }
+              
+
+//                    if (malop.length > 0 & mamon.length > 0 & maki.length > 0 & GV.length > 0) {
+//                        {
+
+//                            $.ajax({
+//                                type: 'GET',
+//                                url: 'UpdateLopHoc',
+//                                data: { malop: malop, mamon: mamon, GV: GV, ND: Lop },
+//                                success: function (res) {
+//                                    LoadData();
+//                                }
+
+
+
+//                            }
+//}
+
+            });
+            LoadData();
+            function LoadData() {
+                $('#ma').val('');
+
+                $.ajax({
+                    type: 'post',
+                    url: '/Admin/QuanLyThi/CreateClassRoom',
+                    success: function (data) {
+                        var Let = '<option value="">Chọn Môn dạy</option>';
+                        $('#lop').empty();
+                        $('#lop').append(Let);
+                        $.each(data.monhoc, function (k, v) {
+                            Let = '<option value="' + v.Ma_Mon + '" onclick="ChonGV(id)" >' + v.TenMon + '</option>';
+                            $('#lop').append(Let);
+                        });
+
+                        Let = '<option value="">Chọn Kỳ Học</option>';
+                        $('#KiThi').empty();
+                        $('#KiThi').append(Let);
+                        $.each(data.kithi, function (k, v) {
+                            Let = '<option value="' + v.MAKI + '">' + v.TenKi + '</option>';
+                            $('#KiThi').append(Let);
+                        });
+
+                        $('#modalLopHP').modal();
+                    }
+                })
+
+                $.ajax({
+                    url: '/Admin/QuanLyThi/LoadLopHP',
+                    type: 'Get',
+                    success: function (data) {
+                        $('#lophoc').empty();
+                        $.each(data.lop, function (k, v) {
+
+                            var let = '<tr id="' + v.MaLop + '">';
+                            let += '<td>' + v.MaLop + '</td >';
+                            let += '<td>' + v.TenLop + '</td >';
+                            let += '<td id="' + v.MaMon + '"> ' + v.TenMon + '</td > ';
+                            let += '<td  id="' + v.MaGV + '">' + v.TenGV + '</td > ';
+                            let += '<td id="' + v.MaKi + '"> ' + v.TenKi + '</td > ';
+
+                            let += '<td>'
+                            let += '<a class="btn btn-xs btn-primary" href="/Admin/QuanLyThi/DSSinhVen/' + v.MaLop + '"> <i class="far fa-eye"></i> </a>&ensp;';
+
+                            //let += '<button name="Update" class="btn btn-xs btn-success"><i class="far fa-edit" aria-hidden="true" style="color:white"></i></button>&ensp;'
+                            let += '<button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true"></i></button>';
+
+                            let += '</td>';
+                            let += '<tr>';
+                            $('#lophoc').append(let);
+                        });
+
+                    }
+
+                });
+            }
+
+            //click button Sua
+
+            //Xóa
+
+
+
+        });
+        function showGV() {
+            var cmd = document.getElementById("lop");
+            var id = cmd.value;
+
+            $.ajax({
+                type: 'post',
+                url: '/Admin/QuanLyThi/GiaoVienDay',
+                data: { MaMon: id },
+                success: function (data) {
+                    var Let = '<option value="">Chọn Giáo Viên </option>';
+                    $('#GV').empty();
+                    $('#GV').append(Let);
+                    $.each(data.data, function (k, v) {
+                        Let = '<option value="' + v.MaGV + '">' + v.TenGV + '</option>';
+                        $('#GV').append(Let);
+                    });
+
+
+                }
+            });
+
+
+        }
+        function Lophocphan(ID) {
+
+            document.location = "/Admin/QuanLyThi/DSSinhVen/" + ID;
+        }
+        function OnTap(ID) {
+
+            document.location = "/Admin/Home/DSDeOn/" + ID;
+        }
+
+    </script>
+
+
+}
+
+@*Modal Xóa*@
+<div class="modal" tabindex="-1" role="dialog" id="modalConfirm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">CẢNH BÁO</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="ma" value="" />
+                Bạn có chắc chắn muốn xóa?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnYes">Xác nhận</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Modal thêm sửa*@
+<div class="modal" tabindex="-1" role="dialog" id="modalLop">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thông Tin Lớp Học</h5>
+
+            </div>
+
+            <div class="modal-body">
+                <input type="text" hidden id="idLop" value="" />
+
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Tên lớp</label>
+                    <input type="text" class="form-control" id="txtKi" placeholder="Nhập Tên Lớp">
+                    <p id="thongbao" style="color:red"></p>
+                </div>
+                <div class="form-group">
+                    <div class="form-group" id="LopHP">
+                        <label for="exampleFormControlInput1">Môn Học</label>
+                        <select id="lop" class="form-control" onchange="showGV()">
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="kihoc">
+                        <label for="exampleFormControlInput1">Kỳ Học</label>
+                        <select id="KiThi" class="form-control">
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="GiaoVien">
+                        <label for="exampleFormControlInput1">Giáo Viên</label>
+                        <select id="GV" class="form-control">
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="height:20px;">
+
+</div>
+<div class="col-md-12">
+    @if (quyen == true)
+    {
+
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex align-items-center">
+                    <h4 class="card-title">DANH SÁCH LỚP HỌC PHẦN</h4>
+                    <button class="btn btn-primary btn-round ml-auto" id="btnAdd" href="/Admin/QuanLyThi/CreateClassRoom" style="text-align:center"><i class="fa fa-plus"></i>Thêm Lớp</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="add-row" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                                    <thead>
+                                        <tr role="row">
+                                            <th class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Mã lớp</th>
+                                            <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Tên lớp học phần</th>
+                                            <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Môn học</th>
+                                            <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Giáo viên</th>
+                                            <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Kỳ thi</th>
+                                            <th style="width: 20%;" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending"></th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="lophoc">
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td id="@item.MaLop" > @item.MaLop </td>
+                                                <td>  @item.TenLop </td>
+                                                <td id="@item.MaMon">  @item.MonHoc.TenMon  </td>
+                                                <td id="@item.MaGV"> @item.GiaoVien.TenGV</td>
+                                                <td id="@item.MaKi">  @item.KiThi.TenKi  </td>
+
+                                                <td>
+
+
+                                                    <a href="/Admin/QuanLyThi/DSSinhVen/@item.MaLop" class="btn btn-xs btn-primary"> <i class="far fa-eye"></i>  </a>
+
+
+                                                    @*<button name="Update" class="btn btn-xs btn-success"><i class="far fa-edit" aria-hidden="true" style="color:white"></i></button>*@
+                                                    <button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true"></i></button>
+
+
+
+
+
+                                                </td>
+                                            </tr>
+
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+    else
+    {
+
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-3" id="@item.MaLop.Trim()">
+                    <div class="card   mb-3">
+                        <div class="card-footer bg-primary d-flex align-items-center justify-content-between">
+                            <h2 class="small text-white">@item.TenLop</h2>
+                        </div>
+                        <div class="card-body small"> Giáo Viên @item.GiaoVien.TenGV </div>
+                        <div class="card-body small"> Kỳ Học : @item.KiThi.TenKi </div>
+                        <div class="card-body small"> Môn :  @item.MonHoc.TenMon </div>
+                        <div class="card-body small">
+                            <button id="@item.MaLop.Trim()" class="btn-success btn btn-xs" onclick="Lophocphan(id)"> Xem Danh Sách </button>
+                            <button id="@item.MaLop.Trim()" onclick="OnTap(id)" class="btn-danger btn btn-xs "> Ôn Tập</button>
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+        </div>
+
+    }
+</div>

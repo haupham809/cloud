@@ -1,0 +1,31 @@
+﻿@model List<TracNghiemOnline.Modell.Phong_Thi>
+@{
+    ViewBag.Title = "CoiThi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+
+
+<div class="container-fluid">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-3" id="@item.MaPhong">
+                <div class="card bg-primary  mb-3">
+                    <div class="card-footer d-flex align-items-center justify-content-between">
+                        <h2 class="small text-white">@item.TenPhong</h2>
+                    </div>
+                    <div class="card-body small"> Giáo Viên @item.LopHocPhan.TenLop</div>
+                    <div class="card-body small"> Kỳ Học : @item.LopHocPhan.KiThi.TenKi </div>
+                    <div class="card-body small"> Môn :  @item.LopHocPhan.MonHoc.TenMon </div>
+                    <div class="card-body small">
+                        <button id="@item.MaPhong" onclick="kiemTra(id)" class=" btn btn-danger"> Vào</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+</div>
+
+

@@ -1,0 +1,94 @@
+﻿@model List<TracNghiemOnline.Modell.MonHoc>
+
+@{
+    ViewBag.Title = "CreateClassRoom";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+
+}
+
+@section Jsfooter{
+    
+    <script>
+        $(document).ready(function () {
+
+            $('#bntTaoClass').click(function () {
+                var Lop = document.getElementById('TxtTen').value;
+                
+                var MaMon = document.getElementById('TxtMaMon').value;
+
+                if (Lop.length <= 0) {
+
+                    alert("Bạn chưa nhập tên lớp   ");
+
+                }
+                if (MaMon.length <= 0) {
+                    alert("Bạn chưa Chọn Môn Học");    
+                }
+
+                if (Lop.length > 0 & MaMon.length > 0) {
+                    $.ajax({
+                        type: 'GET',
+                        url: 'CreateLopHoc',
+                        data: { malop: Lop, mamon: MaMon },
+                        success: function (res) {
+                            window.location = '/Admin/QuanLyThi/LopHocPhan';
+                        }
+
+                    });
+
+                }
+            });
+
+
+
+        });
+
+
+    </script>
+    
+    
+    }
+
+<div class="container-fluid">
+    <div class="card-body mt-5 ">
+
+        <h1 id="ThongBao" style="color:azure"></h1>
+        <div class="form-group">
+            <label class="small mb-1" for="">Môn Học</label>
+
+            <select class=" form-control col-12" id="TxtMaMon">
+                <option value="">  Chọn Tên Môn Học </option>
+                @foreach (var item in Model)
+                {
+
+                    <option value="@item.Ma_Mon"> @item.TenMon </option>
+
+                }
+
+            </select>
+            <p id="giaoDien"> </p>
+        </div>
+
+        <div class="form-group">
+            <label class="small mb-1" for="">Tên Lớp</label>
+            <input type="text" class="form-control  col-12" id="TxtTen" />
+      
+        </div>
+
+
+
+        <div class="row">
+            <div class="col-3">
+                <button id="bntTaoClass" class=" btn-dark nav-link" style="text-align:center"> Hoàn Thành </button>
+            </div>
+            <div class="col-3">
+                <a class=" btn-dark nav-link" href="#" style="text-align:center"> Quay Lai </a>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+</div>

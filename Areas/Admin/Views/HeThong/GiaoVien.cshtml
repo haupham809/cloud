@@ -1,0 +1,266 @@
+﻿@model TracNghiemOnline.Modell.BoMon
+@using TracNghiemOnline.Modell
+@{
+    ViewBag.Title = "GiaoVien";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+@*Main*@
+<div class="row" style="height:20px;">
+
+</div>
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH GIÁO VIÊN</h4>
+                <button class="btn btn-primary btn-round ml-auto" data-toggle="modal" id="btnAdd" data-target="#addRowModal">
+                    <i class="fa fa-plus"></i>
+                    Thêm giáo viên
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+
+                    <div class="col-sm-12">
+                        <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                            <thead>
+                                <tr role="row">
+                                    <th class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Mã giáo viên</th>
+                                    <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Tên giáo viên</th>
+                                    <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Bộ Môn</th>
+                                    <th style="width: 15%;" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending"></th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tblGiaoVien">
+
+
+                                @foreach (var item in new TracNghiemOnlineDB().GiaoViens.Where(x => x.TrangThai == true).ToList())
+                                {
+                                <tr id="@item.MaGV">
+
+                                    <td>@item.MaGV</td>
+
+                                    <td>@item.TenGV</td>
+
+                                    <td>@{ 
+                                        try { @item.BoMon.Ten}
+
+
+
+                                        catch { }
+
+                                    } </td>
+
+                                    <td>
+
+                                        <button name="Update" class="btn btn-xs btn-primary"><i class="far fa-edit" aria-hidden="true"></i></button>&ensp;
+                                        <button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true" style="color:white"></i></button>
+
+                                    </td>
+
+                                </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal thêm sửa*@
+<div class="modal" tabindex="-1" role="dialog" id="modalGiaoVien">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header ">
+                <h5 class="modal-title">THÔNG TIN GIÁO VIÊN</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="idGV" value="" />
+                <p>
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Mã giáo viên</label>
+                        <input type="text" class="form-control" id="maGV" placeholder="Mã giáo viên">
+                        <label for="exampleFormControlInput1">Tên giáo viên</label>
+                        <input type="text" class="form-control" id="tenGV" placeholder="Tên giáo viên">
+
+                        <label>Chọn ngành</label>
+                        <div class="form-group">
+                            @if (ViewBag.lstNganh != null)
+                            {
+                                @Html.DropDownListFor(model => model.Ma_BoMon, ViewBag.lstNganh as SelectList, "--Chọn Bộ Môn--", new { @class = "form-control" })
+                            }
+                        </div>
+
+                    </div>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSubmit">Xác nhận</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+@*Modal Xóa*@
+<div class="modal" tabindex="-1" role="dialog" id="modalConfirm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header ">
+                <h5 class="modal-title">CẢNH BÁO</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="ma" value="" />
+                Bạn có chắc chắn muốn xóa?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnYes">Xác nhận</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+
+        $(document).ready(function () {
+           loaddsGV();
+        });
+        //load du lieu
+        function loaddsGV() {
+            $.ajax({
+                url: '/Admin/HeThong/dsGiaoVien', type: 'get',
+
+                success: function (data) {
+                    if (data.code == 200) {
+                        $('#tblGiaoVien').empty();
+                        $.each(data.dsGiaoVien, function (k, v) {
+                            let tr = '<tr id = "' + v.MaGV + '">';
+                            tr += '<td>' + v.MaGV + '</td>';
+                            tr += '<td>' + v.TenGV + '</td>';
+                            tr += '<td id = "' + v.MaNganh + '">' + v.TenNganh + '</td>';
+                            tr += '<td>';
+                            tr += '<button name="Update" class="btn btn-xs btn-primary"><i class="far fa-edit" aria-hidden="true"></i></button>&ensp;';
+                            tr += '<button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true" style="color:white"></i></button>';
+                            tr += '</td > ';
+                            tr += '</tr > ';
+                            $('#tblGiaoVien').append(tr);
+
+                        });
+                        $('#modalGiaoVien').modal('hide');
+
+                    }
+                    else { alert(data.msg) }
+                }
+            });
+        };
+
+
+        //show form
+        $('#btnAdd').click(function () {
+            $('#modalGiaoVien').modal();
+
+            $('#idGV').val('');
+        })
+        //Add or Updtae
+        $('#btnSubmit').click(function () {
+            let maGV = $('#maGV').val().trim();
+            let tenGV = $('#tenGV').val().trim();
+            let maNganh = $('#Ma_BoMon').val();
+
+            if (maGV.length == 0 || tenGV.length == 0) {
+                alert("Vui lòng nhập đầy đủ thông tin");
+                return;
+            }
+            let idGV = $('#idGV').val().trim();
+            if (idGV.length == 0) {
+                //Add
+                $.ajax({
+                    url: '/Admin/HeThong/AddGiaoVien', type: 'post',
+                    data: {
+                        maGV: maGV,
+                        tenGV: tenGV,
+                        maNganh: maNganh
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            alert(data.msg);
+                            loaddsGV();
+                        } else {
+                            alert.data(msg);
+                        }
+                    }
+                });
+            } else {
+                //Update
+                $.ajax({
+                    url: '/Admin/HeThong/UpdateGiaoVien', type: 'post',
+                    data: {
+                        maGV: maGV,
+                        tenGV: tenGV,
+                        maNganh: maNganh
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+
+                            loaddsGV();
+                            $('#modalGiaoVien').modal('hide');
+                        } else {
+                            alert.data(msg);
+                        }
+                    }
+                });
+            }
+
+
+        });
+        //click button Sua
+        $(document).on('click', "button[name = 'Update']", function () {
+            let ma = $(this).closest('tr').attr('id');
+            let ten = $(this).closest('tr').find("td:eq(1)").text();
+            let manganh = $(this).closest('tr').find("td:eq(2)").attr('id');
+            $('#idGV').val(ma);
+            $('#maGV').val(ma);
+            $('#tenGV').val(ten);
+            $('#Ma_BoMon').val(manganh);
+            $('#modalGiaoVien').modal();
+        });
+        //Xóa
+        $(document).on('click', "button[name = 'Delete']", function () {
+            let ma = $(this).closest('tr').attr('id');
+            $('#ma').val(ma);
+            $('#modalConfirm').modal();
+
+        });
+
+        $('#btnYes').click(function () {
+            let maGV = $('#ma').val().trim();
+            $.ajax({
+                url: '/Admin/HeThong/DeleteGiaoVien', type: 'post',
+                data: {
+                    maGV: maGV,
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        alert(data.msg);
+                        loaddsGV();
+                        $('#modalConfirm').modal('hide');
+                    } else {
+                        alert.data(msg);
+                    }
+                }
+            });
+
+
+
+        });
+
+    </script>
+
+}

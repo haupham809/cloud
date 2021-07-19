@@ -1,0 +1,165 @@
+﻿
+@{
+    ViewBag.Title = "VaoThi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    var phong = (TracNghiemOnline.Modell.Phong_Thi)ViewBag.Phong;
+    var quyen = (bool)ViewBag.Quyen;
+}
+@section  Jsfooter{
+    <script>
+
+        $(document).ready(function () {
+
+            $('#btnBatDau').click(function () {
+                var now = new Date();
+                //var now = TaoNgay(ngay, thoigian);
+                var tgbd = now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate() + '/' + now.getHours() + '/' + now.getMinutes() + '/' + now.getSeconds() + ""
+                $.ajax({
+                    type: "POST",
+                    url: '/Admin/QuanLyThi/UpdateRoom',
+                    data: { tgbd:tgbd },
+                    success: function (res) {
+                       window.location = '/Admin/QuanLyThi/ToChucThi/' + res.status;                   
+                    }
+                });
+                
+
+            });
+
+            $('#btnChon').click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: '/Admin/QuanLyThi/UpdateExamRoom',
+                    success: function (res) {
+                        window.location = '/Admin/Admin/TaoPhong';
+
+                    }
+
+
+                });
+
+
+            });
+
+
+        });
+
+
+    </script>
+    
+    
+    }
+    <div class="container-fluid">
+        <div class="card-body m-4">
+            <div class="card mb-3">
+                <div class=" card-body">
+                    <div class="row">
+                        <div class="col-10 ">
+                            <div> <span> Mã Phong : @phong.MaPhong </span> </div>
+                            <div> <span> Tên Đề : @phong.Bo_De.NoiDung  </span> </div>
+                            <div> <span> Thời Gian : @phong.Bo_De.ThoiGianThi Phút </span> </div>
+                            <div><span> Số Câu: @phong.Bo_De.SoCau câu </span> </div>
+                            <div><span> Số Thí Sinh: @phong.DS_SVThi.Count  </span> </div>
+                        </div>
+
+                        @if (quyen == false)
+                        {
+                            <div class="col-2 mb-2 ">
+                                <button class="btn btn-danger" id="btnBatDau" href=""> Bắt Đầu Thi </button>
+                            </div>
+
+                        }
+                        @if (quyen == true)
+                        {
+                            <div class="col-2 mb-2 ">
+                                <button class="btn btn-danger" id="btnChon" href=""> Chọn </button>
+                            </div>
+
+
+                        }
+
+                    </div>
+
+                </div>
+                <div class="card mb-4">
+
+
+                    @{
+                        int i = 0;
+                        foreach (var item in phong.Bo_De.CauHois)
+                        {
+                            <div class="card-body">
+                                <form>
+                                                        <div class="form-group">
+                                                            <h5 style="width:710px;"> Câu @(i=i+1) :  @item.Kho_CauHoi.NoiDung </h5>
+
+                                                            @{
+                                                                try
+                                                                {
+                                                                    if (item.Kho_CauHoi.HinhAnh.Length > 0)
+                                                                    {
+                                                                        <div class="card-body ">
+                                                                            <img class="img-circle center-block" style="margin-left:140px" src="@item.Kho_CauHoi.HinhAnh"
+                                                                                 alt="anh viet nam anh 1 " width="400px" height="400px" />
+                                                                        </div>
+
+                                                                    }
+
+                                                                }
+                                                                catch { }
+
+                                                            }
+
+                                                        </div>
+                                    @foreach (var item1 in item.Kho_CauHoi.Dap_AN)
+                                    {
+                                        <div class="form-group">
+                                            @{ try
+                                                {
+                                                    if (item1.HinhAnh.Length > 0)
+                                                    {
+                                                        <img class="img-circle center-block" style="margin-left:80px" src="@item1.HinhAnh"
+                                                             alt="anh viet nam anh 1 " width="150px" />
+
+                                                    }
+                                                }
+                                                catch { }
+                                            }
+
+
+                                            <div class="custom-control custom-radio">
+
+                                                @if (item1.TrangThai == true)
+                                                {
+                                                    <label class="custom-control-inline text-danger" style="width:700px;color:orangered " for="@item1.MA_DAN">
+                                                        @item1.NoiDung
+                                                    </label>
+                                                }
+                                                else
+                                                {
+                                                    <label class="custom-control-inline" style="width:700px" for="@item1.MA_DAN">
+                                                        @item1.NoiDung
+                                                    </label>
+                                                }
+
+
+
+                                            </div>
+                                        </div>
+                                    }
+
+                                </form>
+                            </div>
+
+                        }
+
+                    }
+                </div>
+
+
+            </div>
+
+        </div>
+        <>
+    </div>
+

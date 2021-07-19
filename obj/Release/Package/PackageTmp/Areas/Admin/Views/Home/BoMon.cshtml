@@ -1,0 +1,120 @@
+﻿@model List<TracNghiemOnline.Modell.Bo_De>
+@{
+    ViewBag.Title = "BoMon";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+@section scripts{
+    <script>
+
+        $(document).on('click', 'button[name=Delete]', function () {
+            let ma = $(this).closest('tr').find("td:eq(0)").text().trim();
+            $('#ma').val(ma.trim());
+         
+            $('#modalConfirm').modal();
+        });
+        $('#btnYes').click(function () {
+
+            let made = $('#ma').val();;
+  
+            $('#modalSinhVien').modal('hide');
+            $.ajax({
+                url: '/Admin/Home/HuyGui/' + made,         
+                success: function (data) {
+                    document.location ="/Admin/Home/BoMon"
+                }
+            });
+
+        });
+
+
+
+    </script>
+}
+<div class="modal" tabindex="-1" role="dialog" id="modalConfirm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-dark">
+                <h5 class="modal-title">CẢNH BÁO</h5>
+
+            </div>
+            <div class="modal-body">
+                <input type="text" hidden id="ma" value="" />
+                Bạn có chắc chắn muốn hủy không
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnYes">Xác nhận</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH ĐỀ THI</h4>
+              
+                        <a href="/Admin/Bomon/Taodethi" class="btn btn-primary btn-round ml-auto" style="float:right">
+                            <i class="fa fa-plus"></i>
+                            <span>Thêm đề thi</span>
+                        </a>
+                    
+     
+            </div>
+        </div>
+        <div style="width:auto; height:3px; background-color:rgb(248,249,250);"></div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+
+                    <div class="col-sm-12">
+                        <table id="dataTable" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+
+                            <thead>
+                                <tr>
+                                    <th>Mã Đề </th>
+                                    <th>Nội Dung </th>
+                                    <th>Tên Môn Học</th>
+                                    <th>Số Câu</th>
+                                    <th>Thời Gian Thi</th>
+                                    @*<th>Người Tạo</th>*@
+                                    <th>Tình Trạng</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                         
+                            <tbody id="bodeid">
+                                @foreach (var item in Model.Where(x => x.Xoa == true && x.PheDuyet.Length>0 ))
+                                {
+                                    <tr>
+                                        <td> @item.Ma_BoDe </td>
+                                        <td>  @item.NoiDung </td>
+                                        <td> @item.MonHoc.TenMon</td>
+                                        <td> @item.SoCau</td>
+                                        <td> @item.ThoiGianThi</td>
+                                        <td>  @item.PheDuyet </td>
+                                        @{
+                                            if (!item.PheDuyet.Equals("Đã Duyệt"))
+                                            {
+                                                <td>
+                                                    <button name="Delete" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true"></i></button>
+                                                </td>
+
+                                            }
+                                        }
+
+                                    </tr>
+
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+

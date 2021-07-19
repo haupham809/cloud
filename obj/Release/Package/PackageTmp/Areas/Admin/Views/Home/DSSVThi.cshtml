@@ -1,0 +1,120 @@
+﻿@model TracNghiemOnline.Modell.Phong_Thi
+@using TracNghiemOnline.Modell;
+@using TracNghiemOnline.ComMon;
+@{
+    ViewBag.Title = "DSSVThi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+@section scripts {
+    <script>
+
+
+        $(document).ready(function () {
+            $(document).on('click', 'button[name=Delete]', function () {
+                var maphong = $(this).closest('tr');
+                var masv = $(this).closest('tr').find("td:eq(0)").text();
+                $.ajax({
+                    type: 'Post',
+                    url: '/Admin/QuanLyThi/XoaSVPhongThi',
+                    data: { Maphong: maphong.attr('id'), Masv: masv.trim() },
+                    success: function (data) {
+                        if (data.status == true) {
+                            alert("Xóa Thành Cong")
+                            maphong.remove();
+                        } else {
+                            alert(data.status);
+                        }
+                    }
+
+                });
+            });
+
+
+        });
+
+
+
+    </script>
+
+}
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH SINH VIÊN THI</h4>
+                <div class="ml-auto">
+                    <a class="btn btn-primary btn-round ml-auto" href="/Admin/QuanLyThi/DSSVPhongThi/@Model.MaPhong" data-target="#addRowModal">
+                        <i class="fa fa-plus"></i>
+                        Thêm sinh viên
+                    </a>
+                    @{
+                        var session = (TaiKhoan)Session[ComMonStants.UserLogin];
+                        if (session.ChưcVu.Equals("Admin"))
+                        {
+                            <a class="btn btn-primary btn-round ml-auto" href="/Admin/Admin/TaoPhong" data-target="#addRowModal">
+                                <i class="fa fa-plus"></i>
+                                Trở về
+                            </a>
+
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary btn-round ml-auto" href="/Admin/QuanLyThi/PhongThi" data-target="#addRowModal">
+                                
+                                Trở về
+                            </a>
+
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+
+                    <div class="col-sm-12">
+                        <table id="add-row" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+                            <thead>
+                                <tr role="row">
+                                    <th class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Mã sinh viên</th>
+                                    <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Tên sinh viên</th>
+
+                                    <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Lớp</th>
+                                    <th style="width: 15%;" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending"></th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tblSinhVien">
+
+                                @foreach (var item in Model.DS_SVThi)
+                                {
+                                    <tr id=" @item.MaPhong">
+                                        <td>
+                                            @item.SinhVien.MaSV
+                                        </td>
+                                        <td>
+                                            @item.SinhVien.Ten
+                                        </td>
+                                        <td>
+                                            @item.SinhVien.Lop.TenLop
+                                        </td>
+                                        <td>
+                                            <button name="Delete" id="@item.SinhVien.MaSV" class="btn btn-xs btn-danger"><i class="far fa-trash-alt" aria-hidden="true" style="color:white"></i></button>
+                                        </td>
+
+                                    </tr>
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

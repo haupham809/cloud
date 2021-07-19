@@ -1,0 +1,104 @@
+﻿
+@{
+    ViewBag.Title = "DanhGia";
+    Layout = "~/Views/Share/LayOutHome.cshtml";
+}
+
+<div class="container-fluid">
+    <h1 class="mt-4">Charts</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+        <li class="breadcrumb-item active">Charts</li>
+    </ol>
+    <div class="card mb-4">
+        <div class="card-body">
+            Chart.js is a third party plugin that is used to generate the charts in this template. The charts below have been customized - for further customization options, please visit the official
+            <a target="_blank" href="https://www.chartjs.org/docs/latest/">Chart.js documentation</a>
+            .
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-chart-area mr-1"></i>
+            Area Chart Example
+        </div>
+        <button id="btn">sddsad</button>
+        <canvas id="myChart" width="400" height="400">
+        </canvas>
+        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+    </div>
+
+</div>
+@section Jsfooter{
+    <script>
+       
+
+        $(document).ready(function () {
+
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    var c = [];
+
+       
+                    $.ajax({
+                        type: 'Post',
+                        url: "/Admin/Home/DanhGia/",
+                        dataType: 'json',
+                        success: function (res) {
+
+                            $.each(res.mang, function (k, v) {
+
+                                c.push(v)
+
+                            })
+
+                            var chart = new Chart(ctx, {
+                                // The type of chart we want to create
+                                type: 'line',
+
+                                // The data for our dataset
+                                data: {
+                                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'January', 'January', 'January'],
+                                    datasets: [{
+                                        label: 'Biểu Đồ Thống Kê',
+                                        backgroundColor: [
+                                            'rgba(255, 99, 132, 0.2)',
+                                            'rgba(54, 162, 235, 0.2)',
+                                            'rgba(255, 206, 86, 0.2)',
+                                            'rgba(75, 192, 192, 0.2)',
+                                            'rgba(153, 102, 255, 0.2)',
+                                            'rgba(255, 159, 64, 0.2)'
+                                        ],
+                                        borderColor: [
+                                            'rgba(255, 99, 132, 1)',
+                                            'rgba(54, 162, 235, 1)',
+                                            'rgba(255, 206, 86, 1)',
+                                            'rgba(75, 192, 192, 1)',
+                                            'rgba(153, 102, 255, 1)',
+                                            'rgba(255, 159, 64, 1)'
+                                        ],
+                                        borderWidth: 1,
+
+                                        data: c
+                                    }]
+                                },
+
+                                // Configuration options go here
+                                options: {}
+                            });
+                        }
+
+
+
+                    });
+         
+
+               
+
+                });
+
+
+           
+        
+    </script>
+}
+

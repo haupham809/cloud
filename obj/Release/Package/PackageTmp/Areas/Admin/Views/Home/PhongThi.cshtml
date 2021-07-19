@@ -1,0 +1,56 @@
+﻿@model List<TracNghiemOnline.Modell.Phong_Thi>
+@{
+    ViewBag.Title = "PhongThi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+@section Jsfooter{
+    <script>
+        function Vothi(ID) {
+            $.ajax({
+                type: 'Get',
+                url: '/Admin/QuanLyThi/VaoThi/' + ID,
+                success: function (data) {
+                    if (data.trangthai == "Chưa Thi") {
+                        window.location = '/Admin/QuanLyThi/ChonDe/' + data.made;
+                    }
+                    else {
+                        window.location = '/Admin/QuanLyThi/ToChucThi/'+ID 
+                    }
+                  
+                }
+
+            });
+
+         
+        }
+
+    </script>
+
+}
+<div class="container-fluid">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+        <div class="col-md-3" id="@item.MaPhong">
+         
+            <div class="card   mb-3">
+                <div class="card-footer bg-primary d-flex align-items-center justify-content-between">
+                    <h2 class="small text-white">@item.TenPhong</h2>
+                </div>
+                <div class="card-body small"> Lớp @item.LopHocPhan.TenLop</div>
+                <div class="card-body small"> Kỳ Học : @item.LopHocPhan.KiThi.TenKi </div>
+                <div class="card-body small"> Môn :  @item.Bo_De.MonHoc.TenMon </div>
+                <div class="card-body small"> Thời Gian Thi : @item.ThoiGianMo </div>
+                <div class="card-body small">
+                    <button id="@item.MaPhong" onclick="Vothi(id)" class=" btn btn-danger"> Vào</button>
+                </div>
+            </div>
+            </div>
+            }
+
+        </div>
+
+</div>
+
+
+

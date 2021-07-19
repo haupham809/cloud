@@ -1,0 +1,201 @@
+﻿
+@{
+    ViewBag.Title = "DSDEDUYET";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+    var session = (TaiKhoan)Session[ComMonStants.UserLogin];
+}
+
+@using TracNghiemOnline.Modell;
+@using TracNghiemOnline.ComMon;
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            
+
+            var Bode
+
+            $(document).on('click', 'button[name=btnpheduyet]', function () {
+                $.ajax({
+                    url: '/Admin/Bomon/Updatepheduyet', type: 'post',
+                    data: {
+                        made: $(this).closest('tr').attr("id").trim(),
+                        pheduyet: "Đã duyệt",
+                    },
+                    success: function (data) {
+                        window.location = "/Admin/BoMon/DSDEDUYET";
+                    }
+
+                });
+
+
+            });
+            $(document).on('click', 'button[name=btnhuyduyet]', function () {
+                //$.ajax({
+                //    url: '/Admin/Bomon/Updatepheduyet', type: 'post',
+                //    data: {
+                Bode= $(this).closest('tr').attr("id").trim(),
+                //        pheduyet: "Từ chối ",
+                //    },
+                //    success: function (data) {
+                //        Loaddata(data);
+                //    }
+
+                //});
+                $('#modalConfirm').show();
+
+
+            });
+
+            
+            $('#btnSubmit').click(function () {
+             
+                $.ajax({
+                    url: '/Admin/Bomon/Updatepheduyet', type: 'post',
+                    data: {
+                        made: Bode,
+                        pheduyet: "Từ chối ",
+                        lydo: $('#txtlydo').val(),
+                    },
+                    success: function (data) {
+                        window.location = "/Admin/BoMon/DSDEDUYET";
+                    }
+
+                });
+
+            });
+            function Loaddata(data) {
+
+                $('#bodeid').empty();
+                $('#modalSinhVien').hide();
+                $('#modalConfirm').modal('hide');
+                $.each(data.Bode, function (k, v) {
+                    let = '<tr>'
+
+                    let += '<td>' + v.MaDe + '</td>';
+                    let += '<td>' + v.Ten + '</td>';
+                    let += '<td>' + v.TenMon + '</td>';
+                    let += '<td>' + v.SoCau + '</td>';
+                    let += '<td>' + v.ThoiGian + '</td>';
+
+                    let += '<td>' + v.Giaovien + '</td>';
+                    let += '<td id="Đã phê duyệt"><button name="btnpheduyet" class="btn btn-sm badge-success ">   Duyệt </button> ';
+                    let += '<button  name="btnhuyduyet" class="btn btn-sm badge-success "> Hủy </button>';
+                    let += '<a href="/Admin/Home/LoadDeThi/' + v.MaDe + '" class="btn btn-sm btn-primary"><span><i class="far fa-eye"></i></span></a> </td> ';
+
+                    let += '</tr>'
+                    $('#bodeid').append(let);
+
+                });
+
+
+
+            }
+
+        })
+
+    </script>
+}
+
+<div class="modal" tabindex="-1" role="dialog" id="modalConfirm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center">CHON LÝ DO HỦY</h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Lý do </label>
+         <textarea class="form-control" id="txtlydo" rows="5"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" id="btnSubmit">Xác nhận</button>
+                <button type="button" class="btn btn-danger btn-sm" id="btnDong">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row" style="height:20px;">
+
+</div>
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex align-items-center">
+                <h4 class="card-title">DANH SÁCH ĐỀ THI</h4>
+                @{
+
+                    if (!session.ChưcVu.Equals("Admin"))
+                    {
+                        <a href="/Admin/Bomon/Taodethi" class="btn btn-primary btn-round ml-auto" style="float:right">
+                            <i class="fa fa-plus"></i>
+                            <span>Thêm đề thi</span>
+                        </a>
+                    }
+                }
+
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div id="add-row_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                    <div class="col-sm-12">
+                        <table id="dataTable" class="  display table table-striped table-hover dataTable" role="grid" aria-describedby="add-row_info">
+
+                            <tr role="row">
+                                <th class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Mã đề</th>
+                                <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Nội dung</th>
+                                <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Tên môn học</th>
+                                <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Số câu</th>
+                                <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Thời gian thi</th>
+                                <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Người tạo</th>
+                                <th class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending">Ngày tạo</th>
+                                <th style="width: 15%;" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending"></th>
+                            </tr>
+
+
+                            <tbody id="bodeid">
+                                @foreach (var item1 in new TracNghiemOnlineDB().LichNops.Where(x => x.TrangThai == true && x.xoa == true).OrderByDescending(x=>x.ThoiGian))
+                                {
+                                    foreach (var item in new TracNghiemOnlineDB().DSGV_ThucHien.Where(x =>(x.trangthai.Equals("Nộp Muộn") || x.trangthai.Equals("Đang xử lý")) && x.MaLich==item1.id && x.MaDE!=null))
+                                    {
+                                <tr id="@item.id">
+                                    <td> @item.Bo_De.Ma_BoDe </td>
+                                    <td>  @item.Bo_De.NoiDung </td>
+                                    <td> @item1.MonHoc.TenMon</td>
+                                    <td> @item.Bo_De.SoCau</td>
+                                    <td> @item.Bo_De.ThoiGianThi</td>
+                                    <td>  @item.GiaoVien.TenGV </td>
+                                    <td>  @item.NgayNop </td>
+                                    <td>
+                                        <button name="btnpheduyet" class="btn btn-sm badge-success "> Duyệt </button>
+
+                                        <button name="btnhuyduyet" class="btn btn-sm badge-danger "> Hủy </button>
+                                        <a href="/Admin/Home/LoadDeThi/@item.Bo_De.Ma_BoDe" class="btn btn-xs btn-primary"><span><i class="far fa-eye"></i></span></a>
+
+                                    </td>
+
+
+                                </tr>
+                                    }
+
+
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+

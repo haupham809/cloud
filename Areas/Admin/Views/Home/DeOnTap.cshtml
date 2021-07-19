@@ -1,0 +1,78 @@
+﻿@model TracNghiemOnline.Modell.Bo_De
+@{
+    ViewBag.Title = "DeOnTap";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('#btnnhan').click(function () {
+                var date = new Date($('#TGBD').val());
+              
+                var date2 = new Date($('#TGKT').val());
+                if ($('#TGBD').val().length == 0 && $('#TGKT').val().length==0) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/Admin/Home/ThemDeOn',
+                        success: function (res) {
+                            window.location = '/Admin/Home/DSDeOn/' + $('#txtMaphong').val();
+                        }
+                    });
+                }
+                else {
+                    if (date < date2) {
+                        $.ajax({
+                            type: 'get',
+                            data: { TGBD: $('#TGBD').val(), TGKT: $('#TGKT').val() },
+                            url: '/Admin/Home/TaoDeOn',
+                            success: function (res) {
+                                window.location = '/Admin/Home/DSDeOn/' + $('#txtMaphong').val();
+                            }
+
+                        });     
+                    }
+                    else if (date >= date2) {
+                        alert("Thời Gian Bắt Đầu Phải Bé Hơn Thời Gian Hiện Tại");
+                    }
+                    else {
+
+                        alert("Vui Lòng Nhập Đầy Đủ Thời Gian");
+
+                    }
+                }
+               
+
+            });
+        });
+
+    </script>
+}
+
+<div class="container-fluid card" >
+    <div class=" card-body">
+        <input id="txtMaphong" value="@ViewBag.MaLop" hidden="hidden" />
+        <div class="card-body"> Mã Đề : @Model.Ma_BoDe </div>
+        <div class="card-body"> Tên Đề : @Model.NoiDung  </div>
+        <div class="card-body"> Thời Gian : @Model.ThoiGianThi Phút </div>
+        <div class="card-body"> Số Câu: @Model.CauHois.Count câu </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-5">
+                    <label>Thời Gian Bắt Đầu </label>
+                    <input class="form-control" type="datetime-local" id="TGBD" name="DateOfBirth" data-date-format />   
+                </div>
+                <div class="col-5">
+                    <label>Thời Gian Kết Thúc </label>
+                    <input class="form-control" type="datetime-local" id="TGKT" name="DateOfBirth" data-date-format />
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-sm btn-success ml-5" id="btnnhan"> Hoàn Thành </button>
+    </div>
+    </div>
+  
+
+
+
+

@@ -1,0 +1,217 @@
+﻿@model TracNghiemOnline.Modell.Phong_Thi
+@{
+    ViewBag.Title = "ToChucThi";
+    Layout = "~/Areas/Admin/Views/Shared/LaoutShare.cshtml";
+}
+
+<div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex align-items-center">
+                    <h4 class="card-title">DANH SACH PHÒNG THI</h4>
+                    </div>
+                <div class="container-sm">
+                    <p>
+                        <input id="Txtmaphong" hidden="hidden" value="@Model.MaPhong" />
+                        Mã Phòng :  @Model.MaPhong
+                        Lớp HP :@Model.LopHocPhan.TenLop
+                    </p>
+                    <p>
+                        Sĩ Số    :@Model.DS_SVThi.Count;
+               
+                    <p>
+                    Môn Thi : @Model.Bo_De.MonHoc.TenMon;
+                    </p>
+                    <p>
+                        <input id="TxtThoiGian" hidden="hidden" value="@ViewBag.GioThi " />
+                        Thời Gian Thi : @Model.Bo_De.ThoiGianThi  Phút;
+                    </p>
+                    <p>
+                        Thời Gian Bắt Đầu  : @Model.ThoiGianMo.ToString();
+                    </p>
+                    
+                        <p id="thoigian"></p>
+                
+                </div>
+
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+
+                            Danh sách sinh viên thi
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                    <div class="row">
+                                        <div class="col-sm-11">
+                                            <table class="table table-bordered dataTable container" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                                <thead>
+                                                    <tr role="row">
+
+                                                        <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 50px;">Mã</th>
+                                                        <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 100px;">Tên</th>
+
+                                                        <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 100px;">Lớp</th>
+                                                        <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 100px;">Tình Trạng</th>
+                                                        <th tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 100px;"></th>
+                                                </thead>
+                                                <tbody id="tblDeThi">
+
+                                                    @foreach (var item in Model.DS_SVThi)
+                                                    {
+                                                        <tr id=" @item.MaDeThi">
+                                                            <td>
+                                                                @item.SinhVien.MaSV
+                                                            </td>
+                                                            <td>
+                                                                @item.SinhVien.Ten
+                                                            </td>
+                                                            <td>
+                                                                @item.SinhVien.Lop.TenLop
+                                                            </td>
+                                                            <td>
+                                                                @item.TrangThai;
+                                                                @item.SinhVien.De_Thi.ToList()[0].TrangThai;
+                                                            </td>
+                                                            @{
+
+                                                                if (item.SinhVien.De_Thi.ToList()[0].TrangThai == true)
+                                                                {
+
+                                                                    <td id="true"><button name="TrangThai" class="btn btn-sm btn-success"> Đóng </button> </td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td><button id="false" name="TrangThai" class="btn btn-sm btn-success"> Mở  </button> </td>
+                                                                }
+
+                                                            }
+
+
+                                                        </tr>
+
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+</div>
+            </div>
+ 
+                @section  Jsfooter{
+                    <script>
+                        $(document).ready(function () {
+                            // Thiết lập thời gian đích mà ta sẽ đếm
+                            var tg = $('#TxtThoiGian').val();
+                            $.ajax({
+                                type: 'POST',
+                                url: '/Admin/QuanLyThi/LoadPhongThi',
+                                success: function (res) {
+                                    Loaddata(res);
+                                }
+
+                            });
+
+                            $(document).on('click', 'button[name=TrangThai]', function () {
+                                var boleen = $(this).closest('tr').find("td:eq(4)").attr('id');
+                                var made = $(this).closest('tr').attr('id');
+
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '/Admin/QuanLyThi/UpateTrangThai',
+                                    data: { s: boleen, dethi: made },
+                                    success: function (res) {
+                                        Loaddata(res);
+                                    }
+
+                                });
+                            });
+                            var countDownDate = new Date(tg).getTime();
+
+
+
+
+
+
+
+                            function Loaddata(res) {
+                                if (res.Status == true) {
+                                    $('#tblDeThi').empty();
+
+                                    $.each(res.data, function (k, v) {
+                                        var let = '<tr id=' + v.MaDe + '>';
+                                        let += '<td>' + v.MaSV + '</td>';
+                                        let += '<td>' + v.Ten + '</td>';
+                                        let += '<td>' + v.TenLop + '</td>';
+                                        let += '<td>' + v.TrangThai + '</td>';
+                                        if (v.TinhTrang == false) {
+                                            let += '<td id="' + v.TinhTrang + '"> <button  name="TrangThai" class="btn btn-sm badge-danger"> Mở</button> </td> ';
+
+                                        }
+                                        else {
+                                            let += '<td id="' + v.TinhTrang + '"> <button id="' + v.TinhTrang + '" name="TrangThai" class="btn btn-sm btn-success"> Đóng </button> </td>';
+                                        }
+
+                                        let += '</tr>';
+                                        $('#tblDeThi').append(let);
+
+                                    });
+                                }
+                            }
+                            // cập nhập thời gian sau mỗi 1 giây
+                            var x = setInterval(function () {
+                                // Lấy thời gian hiện tại
+
+
+
+                                $.ajax({
+                                    url: '/Admin/QuanLyThi/KiemTraPhongThi',
+                                    type: 'post',
+                                    success: function (res) {
+
+                                        Loaddata(res);
+
+                                    }
+
+
+
+                                });
+                                var now = new Date().getTime();
+
+                                // Lấy số thời gian chênh lệch
+                                var distance = countDownDate - now;
+
+                                // Tính toán số ngày, giờ, phút, giây từ thời gian chênh lệch
+                                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                                // HIển thị chuỗi thời gian trong thẻ p
+                                if (hours > 0) {
+                                    document.getElementById("thoigian").innerHTML = "Thời Gian Còn Lại  " + hours + " : "
+                                        + minutes + " : " + seconds + " Phút ";
+                                }
+                                else {
+                                    document.getElementById("thoigian").innerHTML = "Thời Gian Còn Lại  "
+                                        + minutes + " : " + seconds + " Phút ";
+                                }
+                                // Nếu thời gian kết thúc, hiển thị chuỗi thông báo
+                                if (distance < 0) {
+                                    alert("Đã Hết Giờ Làm Bài")
+                                    window.location = "/Admin/QuanLyThi/KetQuaphongthi/" + $('#Txtmaphong').val();
+                                    clearInterval(x);
+                                }
+                            }, 1000);
+                        });
+
+
+
+                    </script>
+                }
